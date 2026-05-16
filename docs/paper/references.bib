@@ -9,14 +9,14 @@
 
 @article{meta2025cwm,
   title={{CWM}: An Open-Weights {LLM} for Research on Code Generation with World Models},
-  author={{Meta AI}},
+  author={{FAIR CodeGen team} and Copet, Jade and Carbonneaux, Quentin and Cohen, Gal and Gehring, Jonas and Kahn, Jacob and Kossen, Jannik and Kreuk, Felix and McMilin, Emily and Meyer, Michel and Wei, Yuxiang and Zhang, David and Zheng, Kunhao and others},
   journal={arXiv preprint arXiv:2510.02387},
   year={2025}
 }
 
 @article{liu2024codemind,
   title={{CodeMind}: A Framework to Challenge Large Language Models for Code Reasoning},
-  author={Liu, Changshu and others},
+  author={Liu, Changshu and Zhang, Shizhuo Dylan and Ibrahimzada, Ali Reza and Jabbarvand, Reyhaneh},
   journal={arXiv preprint arXiv:2402.09664},
   year={2024}
 }
@@ -51,18 +51,19 @@
   year={2025}
 }
 
-@article{chen2025vgsearch,
+@inproceedings{chen2025vgsearch,
   title={Rethinking Optimal Verification Granularity for Compute-Efficient Test-Time Scaling},
   author={Chen, Hao Mark and Lu, Guanxi and Okoshi, Yasuyuki and Mo, Zhiwen and Motomura, Masato and Fan, Hongxiang},
-  journal={arXiv preprint arXiv:2505.11730},
+  booktitle={NeurIPS},
   year={2025}
 }
 
-@article{snell2024scaling,
-  title={Scaling {LLM} Test-Time Compute Optimally can be More Effective than Scaling Parameters},
+@inproceedings{snell2024scaling,
+  title={Scaling {LLM} Test-Time Compute Optimally can be More Effective than Scaling Model Parameters},
   author={Snell, Charlie and Lee, Jaehoon and Xu, Kelvin and Kumar, Aviral},
-  journal={arXiv preprint arXiv:2408.03314},
-  year={2024}
+  booktitle={ICLR},
+  year={2025},
+  note={Oral}
 }
 
 @inproceedings{li2025sstar,
@@ -81,11 +82,11 @@
   year={2024}
 }
 
-@techreport{chowdhury2024swebenchverified,
-  title={{SWE-bench} Verified},
-  author={Chowdhury, Neil and Aung, James and Shern, Chan Jun and others},
-  institution={OpenAI},
-  year={2024}
+@misc{chowdhury2024swebenchverified,
+  title={Introducing {SWE-bench} Verified},
+  author={Chowdhury, Neil and Aung, James and Shern, Chan Jun and Jaffe, Oliver and Sherburn, Dane and Starace, Giulio and Mays, Evan and Dias, Rachel and Aljubeh, Marwan and Glaese, Mia and Jimenez, Carlos E. and Yang, John and Ho, Leyton and Patwardhan, Tejal and Liu, Kevin and Madry, Aleksander},
+  year={2024},
+  url={https://openai.com/index/introducing-swe-bench-verified/}
 }
 
 @inproceedings{yang2024sweagent,
@@ -95,11 +96,12 @@
   year={2024}
 }
 
-@article{xia2024agentless,
+@inproceedings{xia2024agentless,
   title={Agentless: Demystifying {LLM}-based Software Engineering Agents},
   author={Xia, Chunqiu Steven and Deng, Yinlin and Dunn, Soren and Zhang, Lingming},
-  journal={arXiv preprint arXiv:2407.01489},
-  year={2024}
+  booktitle={FSE},
+  year={2025},
+  note={Distinguished Paper}
 }
 
 @article{yang2025aprsurvey,
@@ -116,13 +118,6 @@
   author={Yang, An and Li, Anfeng and Yang, Baosong and Zhang, Beichen and Hui, Binyuan and others},
   journal={arXiv preprint arXiv:2505.09388},
   year={2025}
-}
-
-@article{yang2024qwen25,
-  title={{Qwen2.5} Technical Report},
-  author={Yang, An and others},
-  journal={arXiv preprint arXiv:2412.15115},
-  year={2024}
 }
 
 @article{chen2021humaneval,
@@ -155,6 +150,19 @@
 
 % === Code Verification ===
 
+@inproceedings{ni2023lever,
+  title={{LEVER}: Learning to Verify Language-to-Code Generation with Execution},
+  author={Ni, Ansong and Iyer, Srini and Radev, Dragomir and Stoyanov, Veselin and Yih, Wen-tau and Wang, Sida I. and Lin, Xi Victoria},
+  booktitle={ICML},
+  year={2023}
+}
+
+@inproceedings{chen2023codet,
+  title={{CodeT}: Code Generation with Generated Tests},
+  author={Chen, Bei and Zhang, Fengji and Nguyen, Anh and Zan, Daoguang and Lin, Zeqi and Lou, Jian-Guang and Chen, Weizhu},
+  booktitle={ICLR},
+  year={2023}
+}
 
 % === Task Reformulation NLP ===
 
