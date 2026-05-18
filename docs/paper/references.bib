@@ -148,6 +148,13 @@
   year={2023}
 }
 
+@article{guo2024deepseekcoder,
+  title={{DeepSeek-Coder}: When the Large Language Model Meets Programming -- The Rise of Code Intelligence},
+  author={Guo, Daya and Zhu, Qihao and Yang, Dejian and Xie, Zhenda and Dong, Kai and Zhang, Wentao and Chen, Guanting and Bi, Xiao and Wu, Y. and Li, Y.K. and Luo, Fuli and Xiong, Yun and Liang, Wenfeng},
+  journal={arXiv preprint arXiv:2401.14196},
+  year={2024}
+}
+
 % === Code Verification ===
 
 @inproceedings{ni2023lever,
@@ -162,6 +169,64 @@
   author={Chen, Bei and Zhang, Fengji and Nguyen, Anh and Zan, Daoguang and Lin, Zeqi and Lou, Jian-Guang and Chen, Weizhu},
   booktitle={ICLR},
   year={2023}
+}
+
+% === Process vs Outcome Supervision ===
+
+@article{lightman2023letsverify,
+  title={Let's Verify Step by Step},
+  author={Lightman, Hunter and Kosaraju, Vineet and Burda, Yura and Edwards, Harri and Baker, Bowen and Lee, Teddy and Leike, Jan and Schulman, John and Sutskever, Ilya and Cobbe, Karl},
+  journal={arXiv preprint arXiv:2305.20050},
+  year={2023}
+}
+
+@article{uesato2022solving,
+  title={Solving Math Word Problems with Process- and Outcome-Based Feedback},
+  author={Uesato, Jonathan and Kushman, Nate and Kumar, Ramana and Song, Francis and Siegel, Noah and Wang, Lisa and Creswell, Antonia and Irving, Geoffrey and Higgins, Irina},
+  journal={arXiv preprint arXiv:2211.14275},
+  year={2022}
+}
+
+% === Verification-in-the-Loop ===
+
+@inproceedings{le2022coderl,
+  title={{CodeRL}: Mastering Code Generation through Pretrained Models and Deep Reinforcement Learning},
+  author={Le, Hung and Wang, Yue and Gotmare, Akhilesh Deepak and Savarese, Silvio and Hoi, Steven C.H.},
+  booktitle={NeurIPS},
+  year={2022}
+}
+
+@article{li2022alphacode,
+  title={Competition-Level Code Generation with {AlphaCode}},
+  author={Li, Yujia and Choi, David and Chung, Junyoung and Kushman, Nate and Schrittwieser, Julian and others},
+  journal={Science},
+  volume={378},
+  number={6624},
+  pages={1092--1097},
+  year={2022}
+}
+
+@article{shinn2023reflexion,
+  title={Reflexion: Language Agents with Verbal Reinforcement Learning},
+  author={Shinn, Noah and Cassano, Federico and Gopinath, Ashwin and Narasimhan, Karthik and Yao, Shunyu},
+  journal={NeurIPS},
+  year={2023}
+}
+
+% === Predictive Mutation Testing ===
+
+@inproceedings{tufano2019predictive,
+  title={Learning How to Mutate Source Code from Bug-Fixes},
+  author={Tufano, Michele and Watson, Cody and Bavota, Gabriele and Di Penta, Massimiliano and White, Martin and Poshyvanyk, Denys},
+  booktitle={ISSTA},
+  year={2019}
+}
+
+@article{kim2022predictive,
+  title={Predictive Mutation Testing via Natural Language Channel},
+  author={Kim, Jinhan and Ju, Juyoung and Tao, Robert and Hu, Nhat-Tan and Baik, Shin Yoo Juyeon},
+  journal={IEEE TSE},
+  year={2022}
 }
 
 % === Task Reformulation NLP ===
@@ -188,6 +253,33 @@
   number={140},
   pages={1--67},
   year={2020}
+}
+
+% === Mutation Testing Validity ===
+
+@inproceedings{andrews2005mutation,
+  title={Is Mutation an Adequate Substitute for Real Faults?},
+  author={Andrews, James H and Briand, Lionel C and Labiche, Yvan},
+  booktitle={ICSE},
+  pages={313--322},
+  year={2005}
+}
+
+@inproceedings{just2014mutants,
+  title={Are Mutants a Valid Substitute for Real Faults in Software Testing?},
+  author={Just, Ren{\'e} and Jalali, Darioush and Inozemtseva, Laura and Ernst, Michael D and Holmes, Reid and Fraser, Gordon},
+  booktitle={FSE},
+  pages={654--665},
+  year={2014}
+}
+
+% === Sampling and Consistency ===
+
+@inproceedings{wang2023selfconsistency,
+  title={Self-Consistency Improves Chain of Thought Reasoning in Language Models},
+  author={Wang, Xuezhi and Wei, Jason and Schuurmans, Dale and Le, Quoc and Chi, Ed and Narang, Sharan and Chowdhery, Aakanksha and Zhou, Denny},
+  booktitle={ICLR},
+  year={2023}
 }
 
 % === Statistical Methods ===
@@ -218,4 +310,71 @@
   pages={420--428},
   year={1979},
   doi={10.1037/0033-2909.86.2.420}
+}
+
+% === Code Evaluation Metrics ===
+
+@inproceedings{zhuo2024icescore,
+  title={{ICE-Score}: Instructing Large Language Models to Evaluate Code},
+  author={Zhuo, Terry Yue},
+  booktitle={Findings of EACL},
+  year={2024}
+}
+
+@article{dong2024codescore,
+  title={{CodeScore}: Evaluating Code Generation by Learning Code Execution},
+  author={Dong, Yihong and Ding, Jiazheng and Jiang, Xue and Li, Ge and Li, Zhuo and Jin, Zhi},
+  journal={ACM Transactions on Software Engineering and Methodology},
+  volume={33},
+  number={8},
+  year={2024}
+}
+
+@inproceedings{zhou2023codebertscore,
+  title={{CodeBERTScore}: Evaluating Code Generation with Pretrained Models of Code},
+  author={Zhou, Shuyan and Alon, Uri and Agarwal, Sumit and Neubig, Graham},
+  booktitle={EMNLP},
+  year={2023}
+}
+
+% === Code Reward Models ===
+
+@inproceedings{ye2025prlcoder,
+  title={Process-Supervised Reinforcement Learning for Code Generation},
+  author={Ye, Yufan and Zhang, Ting and Jiang, Wenbin and Huang, Hua},
+  booktitle={EMNLP},
+  year={2025}
+}
+
+@article{dreamprm2025code,
+  title={{DreamPRM-Code}: Function-as-Step Process Reward Model with Label Correction for {LLM} Coding},
+  author={Zhang, Ruiyi and Qin, Peijia and Cao, Qi and Xie, Pengtao},
+  journal={arXiv preprint arXiv:2512.15000},
+  year={2025}
+}
+
+% === Mutation Testing ===
+
+@inproceedings{jain2023contextual,
+  title={Contextual Predictive Mutation Testing},
+  author={Jain, Kush and Barik, Ristimoy and Le Goues, Claire},
+  booktitle={ESEC/FSE},
+  year={2023}
+}
+
+@article{wang2024llmmutation,
+  title={A Comprehensive Study on Large Language Models for Mutation Testing},
+  author={Wang, Bo and Chen, Mingda and Deng, Ming and Lin, Youfang and Harman, Mark and Papadakis, Mike and Zhang, Jie M.},
+  journal={ACM Transactions on Software Engineering and Methodology},
+  year={2025}
+}
+
+% === Code Generation Systems ===
+
+@techreport{alphacode2023team,
+  title={{AlphaCode} 2 Technical Report},
+  author={{AlphaCode Team}},
+  institution={Google DeepMind},
+  year={2023},
+  url={https://storage.googleapis.com/deepmind-media/AlphaCode2/AlphaCode2_Tech_Report.pdf}
 }

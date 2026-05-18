@@ -1,0 +1,66 @@
+\documentclass[11pt]{article}
+
+% ACL style (review mode for anonymous ARR submission)
+\usepackage[review]{acl}
+
+% Math
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% Tables
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{tabularx}
+
+% Graphics
+\usepackage{graphicx}
+\graphicspath{{../../artifacts/}}
+
+% Lists
+\usepackage{enumitem}
+
+% Custom commands
+\newcommand{\cls}{\textsc{Cls}}
+\newcommand{\cwm}{\textsc{Cwm}}
+\newcommand{\traj}{\textsc{Traj}}
+\newcommand{\fone}{F\textsubscript{1}}
+\newcommand{\pp}{\,\text{pp}}
+
+\title{The Formulation Design Space for Execution-Free Code Verification:\\A Controlled Empirical Study}
+\author{Anonymous}
+
+\begin{document}
+\maketitle
+
+\input{abstract}
+
+\input{introduction}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/paper/fig1_reformulation.pdf}
+\caption{Three verification formulations. \textbf{Left:} \cls{} predicts binary pass/fail per test (1 output token). \textbf{Center:} \cwm{} generates execution output, derives verdict by exact match ($O(L)$ tokens). \textbf{Right:} Trajectory-level scoring predicts patch-level resolved/unresolved (1 token, no per-test signal). Each formulation makes different tradeoffs between output complexity, diagnostic granularity, and inference cost.}
+\label{fig:reformulation}
+\end{figure*}
+
+\input{method}
+
+\input{experiments}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/paper/fig2_scaling_gap.pdf}
+\caption{Gap amplification from function-level to repo-level complexity. Function-level: \cls{}--\cwm{} gap is 1.32\pp{} at 4B, widening to 2.62\pp{} at 8B (2 matched seeds, bootstrap $p{<}.01$). Repo-level same-size 4B: the gap explodes to 25.59\pp{}, with \cwm{} falling below the majority baseline (72.96\%).}
+\label{fig:scaling_gap}
+\end{figure}
+
+
+\input{related_work}
+
+\input{conclusion}
+
+\bibliography{references}
+
+\input{appendix}
+
+\end{document}

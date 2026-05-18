@@ -1,0 +1,44 @@
+\section{Related Work}
+\label{sec:related_work}
+
+\paragraph{Code World Models and Execution Simulation.}
+Code World Models~\cite{meta2025cwm} mid-train a 32B LLM on execution traces to predict output strings and establish the generation-based paradigm for execution-free verification.
+Self-Execution~\cite{maimon2026selfexecution} extends this with step-by-step trace prediction.
+CodeMind~\cite{liu2024codemind} evaluates code reasoning along multiple dimensions including execution prediction.
+SolidCoder~\cite{lee2026solidcoder} bridges mental simulation and actual execution via concrete feedback.
+Abdollahi et al.~\cite{abdollahi2025demystifying} identify systematic failure modes in LLM trace prediction, including position-dependent errors.
+All share a generation formulation whose cost scales with output length. We provide the first controlled comparison of this formulation against classification and trajectory-level alternatives at matched model capacity.
+
+\paragraph{Execution-free Verification.}
+SWE-RM~\cite{shum2025swerm} trains a trajectory-level reward model for patch ranking without execution.
+Patch Reasoner~\cite{xu2025patchreasoner} uses chain-of-thought reasoning for patch verification.
+LEVER~\cite{ni2023lever} trains a classifier to re-rank code candidates by predicting execution correctness; CodeT~\cite{chen2023codet} uses dual execution agreement as a verification signal.
+ICE-Score~\cite{zhuo2024icescore}, CodeScore~\cite{dong2024codescore}, and CodeBERTScore~\cite{zhou2023codebertscore} evaluate code quality without execution via learned metrics, but target generation quality assessment rather than per-test pass/fail verification.
+Snell et al.~\cite{snell2024scaling} show that test-time scaling via verification outperforms parameter scaling; S*~\cite{li2025sstar} and VG-Search~\cite{chen2025vgsearch} find that finer-grained verification improves selection efficiency.
+Self-consistency~\cite{wang2023selfconsistency} uses majority voting over sampled solutions as an implicit verifier.
+These works treat verification granularity and formulation as design choices but do not compare them at controlled capacity. We isolate the formulation variable (classification vs.\ generation vs.\ trajectory-level) while holding model, data, and compute constant.
+
+\paragraph{Process vs.\ Outcome Supervision.}
+Lightman et al.~\cite{lightman2023letsverify} demonstrate that process-based reward models (verifying each reasoning step) outperform outcome-based models (verifying only the final answer) for mathematical reasoning.
+Uesato et al.~\cite{uesato2022solving} show similar advantages for process feedback in math word problems.
+In code, DreamPRM-Code~\cite{dreamprm2025code} applies function-level process rewards, and PRL-Coder~\cite{ye2025prlcoder} integrates process supervision into RL-based code generation.
+Our per-test classification is structurally analogous to process supervision: each test verdict corresponds to an intermediate verification step, while trajectory-level scoring corresponds to outcome supervision. Our finding that per-test and trajectory-level achieve equivalent accuracy (TOST $p = 0.007$) with per-test providing additional diagnostic value parallels the process supervision result that step-level verification enables error localization at no accuracy cost.
+
+\paragraph{Verification in Repair Pipelines.}
+CodeRL~\cite{le2022coderl} trains a critic model to provide execution feedback for RL-based code generation.
+AlphaCode~\cite{li2022alphacode} and AlphaCode 2~\cite{alphacode2023team} use massive sampling with test-based filtering for competition programming.
+Reflexion~\cite{shinn2023reflexion} uses verbal self-reflection on execution results to iteratively improve agent performance.
+SWE-bench~\cite{jimenez2024swebench} and SWE-bench Verified~\cite{chowdhury2024swebenchverified} provide standard benchmarks; SWE-agent~\cite{yang2024sweagent} and Agentless~\cite{xia2024agentless} demonstrate agent-based and pipeline-based repair respectively.
+Yang et al.~\cite{yang2025aprsurvey} survey LLM-based repair, identifying verification as a persistent bottleneck with cost scaling linearly in candidates.
+These systems demonstrate that verification quality is a primary bottleneck for iterative repair. Our formulation comparison is complementary: the efficiency and diagnostic granularity of the verifier directly affects the viability of verification-in-the-loop approaches at scale.
+
+\paragraph{Predictive Mutation Testing.}
+Predicting test outcomes for code mutations without execution has been studied in software engineering~\cite{tufano2019predictive,kim2022predictive}, with recent work applying LLMs to mutation testing~\cite{wang2024llmmutation} and contextual prediction~\cite{jain2023contextual}. Our per-test classification shares this problem structure: given a code change and a test, predict pass or fail. We extend this line to LLM-based verification at repository scale, comparing it against generation and trajectory-level formulations under controlled conditions for the first time.
+
+\paragraph{Parameter-Efficient Fine-Tuning for Code.}
+LoRA~\cite{hu2022lora} enables low-rank adaptation of large models with minimal trainable parameters; QLoRA~\cite{dettmers2024qlora} extends this to quantized models.
+Both have become standard for code-specific fine-tuning, with DeepSeek-Coder~\cite{guo2024deepseekcoder} demonstrating that adapter-based training preserves pretrained code understanding while specializing for downstream tasks.
+We use LoRA (rank 16) for all experiments to ensure that capacity differences between formulations reflect the task structure rather than total trainable parameters. Our rank ablation (Appendix~\ref{app:ablations}) confirms that doubling adapter capacity does not resolve the generation bottleneck, consistent with a formulation-level constraint rather than a capacity limitation.
+
+\paragraph{Classification vs.\ Generation in NLP.}
+Task framing affects model performance broadly: T5~\cite{raffel2020t5} and BART~\cite{lewis2020bart} demonstrate generation-classification tradeoffs under controlled capacity, while SQuAD~\cite{rajpurkar2016squad} shows that constraining output space can simplify tasks without sacrificing quality. We extend this lens to code verification, finding that code complexity moderates the tradeoff in a model-contingent manner.

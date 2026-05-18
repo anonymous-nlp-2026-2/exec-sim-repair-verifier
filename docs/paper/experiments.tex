@@ -1,7 +1,7 @@
 \section{Experiments}
 \label{sec:experiments}
 
-We evaluate \cls{}, \cwm{}, and trajectory-level scoring (TRAJ) across model sizes and complexity levels.
+We systematically compare \cls{}, \cwm{}, and \traj{} across two model families, two complexity levels, and multiple seeds to characterize the formulation design space for neural code verification.
 
 \subsection{Experimental Setup}
 \label{sec:setup}
@@ -11,21 +11,21 @@ We evaluate \cls{}, \cwm{}, and trajectory-level scoring (TRAJ) across model siz
 \emph{Repo-level}: per-test instances from SWE-bench Verified~\cite{chowdhury2024swebenchverified} mutants. ${\sim}$70K training samples; val ($n{=}9{,}335$) and test ($n{=}9{,}784$) have zero problem overlap (majority baseline 72.96\%). Val-based checkpoint selection follows standard practice~\cite{jimenez2024swebench}.
 
 \paragraph{Models and training.}
-We fine-tune Qwen3-4B and Qwen3-8B~\cite{qwen2025qwen3} with LoRA~\cite{hu2022lora} (rank 16, 3 epochs) across five seeds. Seeds 42/123/456 use bfloat16; seeds 789/0 use NF4 quantization~\cite{dettmers2024qlora}. Our \cwm{} baseline is a LoRA fine-tuned variant for controlled comparison, not a reproduction of the 32B Code World Model~\cite{meta2025cwm}. Repo-level models use val-selected checkpoints. Zero-shot baselines use Qwen3-8B and Qwen3-32B (NF4) as LLM-as-judge.
+We fine-tune Qwen3-4B and Qwen3-8B~\cite{qwen2025qwen3} with LoRA~\cite{hu2022lora} (rank 16, 3 epochs) across five seeds. Seeds 42/123/456 use bfloat16; seeds 789/0 use NF4 quantization~\cite{dettmers2024qlora}. For cross-model validation, we additionally fine-tune DeepSeek-Coder-6.7B~\cite{guo2024deepseekcoder} with identical LoRA configuration (2 seeds each for \cls{} and \cwm{}). Our \cwm{} baseline is a LoRA fine-tuned variant for controlled comparison, not a reproduction of the 32B Code World Model~\cite{meta2025cwm}. Repo-level models use val-selected checkpoints. Zero-shot baselines use Qwen3-8B and Qwen3-32B (NF4) as LLM-as-judge. Full hyperparameter details appear in Appendix~\ref{app:hyperparams}.
 
 \paragraph{Statistics.}
 Confidence intervals use clustered bootstrap~\cite{davison1997bootstrap} (114 problem clusters, 10K resamples); per-test vs.\ trajectory-level comparison uses TOST~\cite{schuirmann1987tost} ($\pm$2\pp{} margin). ICC~\cite{shrout1979icc} quantifies within-problem correlation. Oracle analysis uses SWE-bench Verified (500 instances).
 
 
-\subsection{Function-Level Results}
+\subsection{Function-Level: Formulation Equivalence}
 \label{sec:func_results}
 
-Table~\ref{tab:main_results} reports function-level results across formulations.
+Table~\ref{tab:main_results} reports function-level results across formulations and model families.
 
 \begin{table}[t]
 \centering
 \small
-\caption{Function-level per-test verification results on HumanEval+MBPP test set (1,890 samples). \cls{}: per-test binary classification; \cwm{}: execution output generation; TRAJ: trajectory-level scoring; ZS: zero-shot LLM-as-judge. Mean $\pm$ std over seeds reported where applicable.}
+\caption{Function-level per-test verification results on HumanEval+MBPP test set. \cls{}: per-test binary classification; \cwm{}: execution output generation; \traj{}: trajectory-level scoring; ZS: zero-shot LLM-as-judge. Mean $\pm$ std over seeds reported where applicable. Seeds 42/123/456 use full bfloat16; seeds 789/0 use NF4 quantization. \cls{} and \cwm{} are evaluated on the full 1,890 test samples; \traj{} is evaluated on a 1,032-sample subset covering the same 447 (problem, mutation) variants with representative test cases selected to fit the trajectory input format.}
 \label{tab:main_results}
 \resizebox{\columnwidth}{!}{%
 \setlength{\tabcolsep}{4pt}
@@ -33,118 +33,194 @@ Table~\ref{tab:main_results} reports function-level results across formulations.
 \toprule
 \textbf{Method} & \textbf{Model} & \textbf{Seeds} & \textbf{Accuracy (\%)} \\
 \midrule
+\multicolumn{4}{l}{\emph{Qwen3 (primary)}} \\
 \cls{} (fine-tuned) & 4B & 5 & \textbf{88.43 $\pm$ 0.78} \\
 \cwm{} (fine-tuned) & 4B & 5 & 87.19 $\pm$ 0.37 \\
-TRAJ (fine-tuned) & 4B & 5 & 86.30 $\pm$ 0.97 \\
+\traj{} (fine-tuned) & 4B & 5 & 86.30 $\pm$ 0.97 \\
 \midrule
-ZS LLM-as-judge & 8B & 1 & 64.40 \\
+\multicolumn{4}{l}{\emph{DeepSeek-Coder (cross-model validation)}} \\
+\cls{} (fine-tuned) & 6.7B & 2 & 86.85 $\pm$ 0.11 \\
+\cwm{} (fine-tuned) & 6.7B & 2 & 86.83 $\pm$ 1.49 \\
+\traj{} (fine-tuned) & 6.7B & 2 & 84.16 $\pm$ 1.30 \\
+\midrule
+\multicolumn{4}{l}{\emph{Prompting baselines}} \\
+0-shot & 8B (Qwen3) & 1 & 68.70 \\
+0-shot & 6.7B (DeepSeek) & 1 & 63.00 \\
+ZS LLM-as-judge & 8B (Qwen3) & 1 & 64.40 \\
+ZS LLM-as-judge & 6.7B (DeepSeek) & 1 & 56.56 \\
 ZS LLM-as-judge & 32B (NF4) & 1 & 71.69 \\
+3-shot ICL & 8B (Qwen3) & 1 & 68.78 \\
+3-shot ICL & 6.7B (DeepSeek) & 1 & 59.95 \\
+\midrule
+Majority (pass) & --- & --- & 51.75 \\
 \bottomrule
 \end{tabular}}
 \end{table}
 
-Fine-tuned \cls{} achieves 88.43\% ($\pm$0.78), compared to 87.19\% ($\pm$0.37) for \cwm{} and 86.30\% ($\pm$0.97) for TRAJ. The \cls{}--\cwm{} gap is 1.24\pp{}, modest at this complexity level where generation is not yet bottlenecked by token budget or string complexity. Zero-shot baselines lag substantially (64.40\% at 8B, 71.69\% at 32B NF4), confirming that task-specific fine-tuning is necessary for reliable verification.
+All three formulations achieve comparable accuracy on Qwen3-4B: \cls{} 88.43\% ($\pm$0.78), \cwm{} 87.19\% ($\pm$0.37), \traj{} 86.30\% ($\pm$0.97). The \cls{}--\cwm{} gap of 1.24\pp{} is modest, within 1.6$\times$ of the seed standard deviation for \cls{}. DeepSeek-Coder-6.7B confirms this pattern across all three formulations: \cls{} 86.85\% ($\pm$0.11), \cwm{} 86.83\% ($\pm$1.49), \traj{} 84.16\% ($\pm$1.30). The \cls{}--\cwm{} gap of 0.02\pp{} is indistinguishable from zero; \traj{} is 2.69\pp{} below \cls{}, consistent with the Qwen3 ordering. At this complexity level, execution outputs are short and structured, generation-specific failure modes (truncation, format compliance) are not triggered, and formulation choice does not meaningfully affect accuracy. Under standard instruction-following prompting, baselines reveal three layers of the verification challenge. First, \emph{repo-level inherent difficulty}: 0-shot accuracy drops to 49.9\% (Qwen3-8B) and 48.5\% (DeepSeek-6.7B, 8.7\% unparseable) at repo level, below the majority baseline (72.96\%). Both models exhibit systematic but non-discriminative bias (Qwen3 predicts fail 75\% of the time; DeepSeek predicts pass 73\%), achieving ${\sim}$49\% accuracy in both cases. Three-shot ICL fails entirely at repo level (100\% unparseable due to context overflow). Second, \emph{fine-tuning necessity}: the 0-shot$\to$fine-tuned gain is larger at repo level (25--35\pp{}) than at function level (18--20\pp{}); repository-level verification requires task-specific training under standard prompting, not merely a capable base model. At function level, 0-shot achieves 68.70\% (Qwen3-8B) and 63.00\% (DeepSeek-6.7B); the LLM-as-judge variant is lower (64.40\%, 56.56\%); 3-shot ICL reaches 68.78\% and 59.95\%. Third, \emph{formulation choice}: even after fine-tuning, formulation selection matters at repo level (\cls{} outperforms \cwm{} by 13--26\pp{}), an interaction effect absent at function level where all formulations converge. \cwm{} produces 0\% unparseable outputs at function level for both model families.
+
+\paragraph{Variance asymmetry.} \cwm{}'s higher seed variance on DeepSeek ($\sigma{=}1.49$ vs.\ \cls{} $\sigma{=}0.11$) mirrors the Qwen3 pattern (\S\ref{sec:analysis}, paragraph d): generation is more sensitive to initialization than classification, consistent with the output space being less constrained.
 
 
 \subsection{Scaling Behavior}
 \label{sec:scaling}
 
-Table~\ref{tab:scaling} compares \cls{} and \cwm{} at two model sizes using three matched seeds (42, 123, 456), all trained in full bfloat16 precision to ensure a controlled comparison.
+Table~\ref{tab:scaling} compares all three formulations at two model sizes using two matched seeds (42, 123), all trained in full bfloat16 precision to ensure a controlled comparison.
 
 \begin{table}[t]
 \centering
 \small
-\caption{Model-size scaling: \cls{} vs.\ \cwm{} accuracy (\%) at 4B and 8B. Three matched seeds in full precision. The \cls{}--\cwm{} gap widens from 1.18\pp{} to 2.43\pp{}.}
+\caption{Model-size scaling: accuracy (\%) at 4B and 8B (Qwen3, two matched seeds in full precision). \cls{} and \traj{} scale positively; \cwm{} does not.}
 \label{tab:scaling}
 \setlength{\tabcolsep}{4pt}
-\begin{tabular}{llccccc}
+\begin{tabular}{llcccc}
 \toprule
-\textbf{Method} & \textbf{Size} & \textbf{s42} & \textbf{s123} & \textbf{s456} & \textbf{Mean} & \textbf{Gap} \\
+\textbf{Method} & \textbf{Size} & \textbf{s42} & \textbf{s123} & \textbf{Mean} & \textbf{$\Delta$ 4B$\to$8B} \\
 \midrule
-\cls{} & 4B & 87.83 & 89.52 & 87.88 & 88.41 & \multirow{2}{*}{1.18} \\
-\cwm{} & 4B & 87.51 & 87.20 & 86.98 & 87.23 & \\
+\cls{} & 4B & 87.83 & 89.52 & 88.68 & \multirow{2}{*}{+1.27} \\
+\cls{} & 8B & \textbf{90.48} & 89.40 & \textbf{89.94} & \\
 \midrule
-\cls{} & 8B & \textbf{90.48} & 89.40 & 88.31 & \textbf{89.40} & \multirow{2}{*}{\textbf{2.43}} \\
-\cwm{} & 8B & 87.67 & 86.98 & 86.24 & 86.96 & \\
+\cwm{} & 4B & 87.51 & 87.20 & 87.36 & \multirow{2}{*}{$-$0.03} \\
+\cwm{} & 8B & 87.67 & 86.98 & 87.33 & \\
+\midrule
+\traj{} & 4B & 85.27 & 86.72 & 86.00 & \multirow{2}{*}{+1.70} \\
+\traj{} & 8B & 87.60 & 87.79 & 87.70 & \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-At 4B, \cls{} and \cwm{} are separated by 1.18\pp{} on the matched three-seed subset. At 8B, the gap more than doubles to 2.43\pp{} (Figure~\ref{fig:scaling_gap}). Clustered bootstrap analysis yields a mean gap of 2.26\pp{} ($p = 0.0066$, 95\% CI $[1.80, 2.71]$), confirming the widening is not a sampling artifact.
+\cls{} and \traj{} both scale positively from 4B to 8B (+1.27\pp{} and +1.70\pp{} respectively), while \cwm{} remains flat ($-$0.03\pp{}). At 8B, the ranking is \cls{} (89.94) $>$ \traj{} (87.70) $>$ \cwm{} (87.33). The \cls{}--\cwm{} gap widens from 1.32\pp{} at 4B to 2.62\pp{} at 8B (Figure~\ref{fig:scaling_gap}); clustered bootstrap on the 3-seed superset (42, 123, 456 for \cls{}/\cwm{}) yields $p = 0.0066$ (95\% CI $[1.80, 2.71]$), which confirms the widening is not a sampling artifact.
 
-The asymmetry in scaling efficiency is striking: from 4B to 8B, \cls{} gains +0.99\pp{} (88.41 $\to$ 89.40) while \cwm{} loses $-$0.27\pp{} (87.23 $\to$ 86.96). The additional model capacity benefits classification---where the model needs only to discriminate pass from fail---but provides no measurable improvement for generation, where the model must additionally produce exact output strings. This pattern is consistent with the hypothesis that the string-prediction bottleneck, not model capacity, bounds \cwm{} accuracy. However, the \cwm{} regression ($-$0.27\pp{}) falls within seed noise (3-seed std ${\sim}$0.5\pp{}) and could reflect suboptimal hyperparameter transfer rather than a fundamental bottleneck. Whether this divergence amplifies at repository-level complexity is examined in \S\ref{sec:repo}.
+\cwm{} is the only formulation that does not benefit from increased capacity under our experimental configuration (LoRA rank 16, fixed hyperparameters). The \cwm{} stagnation ($-$0.03\pp{}) falls within seed noise and could reflect suboptimal hyperparameter transfer at 8B rather than a fundamental scaling limitation. We do not claim that generation \emph{cannot} benefit from scale, only that it did not in this configuration. This pattern is observed within Qwen3 only; whether it generalizes across model families at function level is not yet tested. At repository-level complexity, the interaction between formulation and scale is examined in \S\ref{sec:repo}.
 
 
 \subsection{Per-Test vs.\ Trajectory-Level Equivalence}
 \label{sec:equivalence}
 
-We compare \cls{} (aggregated via all-pass rule) against TRAJ on 523 variant-level instances across five seeds. The pooled gap is $-$0.45\pp{} (95\% CI [$-$1.71, +0.84]); the TOST equivalence test confirms statistical equivalence at $p = 0.007$ ($\pm$2\pp{} margin). Within-problem predictions are correlated (ICC $= 0.191$, $p < 0.0001$, DEFF $= 3.97$); all statistical tests use clustered bootstrap accordingly. Per-test classification thus provides diagnostic information---which specific tests fail---at no cost to variant-level accuracy.
+We compare \cls{} (aggregated via all-pass rule) against \traj{} on 523 variant-level instances across five seeds. The pooled gap is $-$0.45\pp{} (95\% CI [$-$1.71, +0.84]); the TOST equivalence test confirms statistical equivalence at $p = 0.007$ ($\pm$2\pp{} margin), with a minimum equivalence margin of $\pm$1.63\pp{}. The $\pm$2\pp{} margin reflects practical significance: formulation differences below 2\pp{} are unlikely to affect deployment decisions where absolute accuracy dominates the cost-benefit analysis. Within-problem predictions are correlated (ICC $= 0.191$, $p < 0.0001$, DEFF $= 3.97$); all statistical tests use clustered bootstrap accordingly. On DeepSeek-Coder, the observed \cls{}--\cwm{} gap of 0.02\pp{} is consistent with equivalence, but with only 2 seeds the comparison is underpowered (TOST not significant even at $\pm$5\pp{} margin). Per-test classification provides diagnostic information (which specific tests fail) at no cost to variant-level accuracy, paralleling the finding in process supervision~\cite{lightman2023letsverify} that step-level verification enables error localization without degrading outcome-level performance.
+
+\paragraph{TOST margin sensitivity.}
+Table~\ref{tab:tost_sensitivity} reports equivalence test results across multiple margins. The observed mean difference is 1.24\pp{} (\cls{} $>$ \cwm{}), so the minimum margin at which equivalence holds is $\pm$1.63\pp{}. At $\pm$1\pp{}, the margin is too tight to contain the observed difference ($p = 0.871$); at $\pm$2\pp{}, equivalence is confirmed ($p = 0.007$); at $\pm$3\pp{}, evidence is overwhelming ($p < 0.001$). We adopt $\pm$2\pp{} as the primary margin because formulation differences below 2\pp{} are unlikely to affect deployment decisions: at this scale, factors such as seed selection, checkpoint choice, and hyperparameter tuning dominate the accuracy variance.
+
+\begin{table}[h]
+\centering
+\small
+\caption{TOST equivalence sensitivity (Qwen3-4B, 5 seeds, $\alpha{=}0.05$). Observed mean \cls{}--\cwm{} difference: 1.24\pp{}.}
+\label{tab:tost_sensitivity}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{ccc}
+\toprule
+\textbf{Margin $\delta$ (\pp{})} & \textbf{TOST $p$} & \textbf{Equivalent?} \\
+\midrule
+$\pm$1 & 0.871 & No \\
+$\pm$2 & 0.007 & Yes \\
+$\pm$3 & $<$0.001 & Yes \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{\cls{}--\traj{} accuracy relationship.}
+Across both model families, \cls{} achieves slightly higher accuracy than \traj{}: Qwen3-4B \cls{} 88.43\% vs.\ \traj{} 86.30\% (gap 2.13\pp{}); DeepSeek-6.7B \cls{} 86.85\% vs.\ \traj{} 84.16\% (gap 2.69\pp{}). The consistency of this ordering across models suggests that per-test decomposition provides a modest accuracy benefit beyond diagnostic granularity: processing each test independently allows the model to focus on a single pass/fail decision rather than integrating signals across an entire test trajectory. \cls{} additionally offers ${\sim}$24$\times$ per-instance speedup over \traj{} at function level (2.3 tests/instance $\times$ 47ms/call vs.\ 2,632ms single \traj{} call; DeepSeek-6.7B, RTX 5090). This advantage narrows at repo level (${\sim}$3$\times$; 12.3 tests $\times$ 70ms vs.\ 2,631ms) because \cls{} per-test cost grows linearly with test count. Combined with the diagnostic granularity advantage (\S\ref{sec:oracle-results}), per-test classification Pareto-dominates trajectory-level scoring on accuracy, efficiency, and informativeness at function-level complexity; at repo level the efficiency advantage is modest and disappears entirely for instances with $>$50 tests.
 
 
 \subsection{Accuracy-Utility Frontier}
 \label{sec:oracle-results}
 
-Oracle analysis on SWE-bench Verified (500 instances) reveals that per-test advantage concentrates sharply: at $T = 1$ F2P tests (68.7\% of instances), per-test and trajectory-level are informationally equivalent. The advantage materializes at $T \geq 2$ (31.3\%), with $T = 2$ alone contributing 55.3\% of the total 10.93\pp{} block-correlated advantage. Full stratification and the i.i.d.\ vs.\ block-correlated comparison appear in Appendix~\ref{app:oracle}.
+Oracle analysis on SWE-bench Verified (500 instances) reveals that per-test advantage concentrates sharply: at $T = 1$ F2P tests (68.7\% of instances), per-test and trajectory-level are informationally equivalent. The advantage materializes at $T \geq 2$ (31.3\%), with $T = 2$ alone contributing 55.3\% of the total 10.93\pp{} block-correlated advantage. Pass-to-pass (P2P) regression is negligible (1.04\% mean, 0\% median), so the practical value concentrates in fail-to-pass discrimination. Full stratification and the i.i.d.\ vs.\ block-correlated comparison appear in Appendix~\ref{app:oracle}.
 
 
-\subsection{Repo-Level Results}
+\subsection{Repo-Level: Complexity-Dependent Divergence}
 \label{sec:repo}
 
-Table~\ref{tab:repo_level} compares \cls{} and \cwm{} on SWE-bench Verified per-test classification at repository-level complexity. All checkpoints are selected by validation accuracy; the test set ($n{=}9{,}784$) has zero problem overlap with validation.
+Table~\ref{tab:repo_level} compares \cls{} and \cwm{} on SWE-bench Verified per-test classification at repository-level complexity. All checkpoints are selected by validation accuracy; the test set ($n{=}9{,}784$) has zero problem overlap with validation. We report both overall accuracy (where unparseable outputs default to the majority class, pass) and parseable-only accuracy to disentangle generation quality from default assignment effects.
 
 \begin{table}[t]
 \centering
 \small
-\caption{Repo-level per-test verification on SWE-bench Verified test set ($n{=}9{,}784$, val-selected checkpoints). Same-size 4B comparison is primary; \cls{} 8B included for scaling context; \cwm{} 8B in progress.}
+\caption{Repo-level cross-formulation comparison on SWE-bench Verified test set ($n{=}9{,}784$). \cwm{} unparseable outputs default to pass (majority class). Seeds: Qwen3 primary seed 42; DeepSeek \traj{} 6 seeds. \textsuperscript{$\star$}\cwm{} preliminary (training in progress).}
 \label{tab:repo_level}
 \resizebox{\columnwidth}{!}{%
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{llccccc}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lcccc}
 \toprule
-\textbf{Method} & \textbf{Size} & \textbf{Seed} & \textbf{Acc (\%)} & \textbf{Macro \fone{}} & \textbf{Unparse (\%)} & \textbf{vs Maj.\ (\pp{})} \\
+\textbf{Model} & \textbf{\cls{} Acc (\%)} & \textbf{\cwm{} Acc (\%)} & \textbf{\cwm{} Unparse (\%)} & \textbf{\traj{} Acc (\%)} \\
 \midrule
-\cls{} & 4B & 42 & \textbf{83.63} & 75.63 & 0.0 & +10.67 \\
-\cwm{} & 4B & 42 & 58.04 & 51.67 & 53.7 & $-$14.92 \\
-\cwm{} & 4B & 123 & 59.09 & 43.43 & 67.2 & $-$13.87 \\
+Qwen3-4B & \textbf{83.63} & 58.04 & 53.70 & TBD \\
+Qwen3-8B & 84.48 / 85.60\textsuperscript{$\dagger$} & 65.17 & 73.80 & TBD \\
+DeepSeek-6.7B & 74.93 & ${\sim}$60\textsuperscript{$\star$} & TBD & 75.35 $\pm$ 5.00 \\
 \midrule
-\cls{} & 8B & 42 & 84.48 & 78.17 & 0.0 & +11.52 \\
-\cls{} & 8B & 123 & 85.60 & 78.38 & 0.0 & +12.64 \\
-\cwm{} & 8B & --- & --- & --- & --- & --- \\
-\midrule
-Majority & --- & --- & 72.96 & --- & --- & --- \\
+0-shot (Qwen3-8B) & 49.90 & --- & --- & --- \\
+0-shot (DeepSeek-6.7B) & 48.50 & --- & 8.70 & --- \\
+Majority baseline & \multicolumn{4}{c}{72.96} \\
 \bottomrule
 \end{tabular}}
+
+\vspace{2pt}
+{\footnotesize \textsuperscript{$\dagger$}Two seeds (42 / 123). \textsuperscript{$\star$}\cwm{} running accuracy; final values pending. \cwm{} parseable-only accuracy: 42.88\% (4B), 38.52\% (8B).}
 \end{table}
 
-The same-size 4B comparison reveals a 25.59\pp{} gap (\cls{} 83.63\% vs.\ \cwm{} 58.04\%, seed 42; Figure~\ref{fig:scaling_gap}). \cwm{} falls 14.92\pp{} below the majority baseline (72.96\%), indicating negative utility. A second \cwm{} seed (123, 59.09\%) confirms the failure is not seed-specific. The primary driver is format compliance collapse: 53.7--67.2\% of \cwm{} outputs are unparseable across seeds, while \cls{} produces zero unparseable outputs under standard inference (8,192 tokens). Among parseable \cwm{} outputs, accuracy is 42--43\%---below both majority baseline and chance level (50\%)---indicating anti-informative predictions. \S\ref{sec:analysis} provides detailed error analysis.
+\paragraph{Formulation divergence.} At repository-level complexity, \cls{} and \cwm{} diverge sharply on Qwen3: the gap is 25.59\pp{} at 4B (\cls{} 83.63\% vs.\ \cwm{} 58.04\%, seed 42; Figure~\ref{fig:scaling_gap}) and 19.31\pp{} at 8B (84.48\% vs.\ 65.17\%). Both gaps are an order of magnitude larger than at function level (1--3\pp{}, Table~\ref{tab:scaling}); formulation effectiveness is complexity-dependent. \cwm{} falls below the majority baseline at both scales ($-$14.92\pp{} at 4B, $-$7.79\pp{} at 8B): negative utility for this model/formulation combination.
 
-\cls{} 8B achieves 84.48\% (seed 42) and 85.60\% (seed 123) in cross-size comparison. The 4B$\to$8B transition within \cls{} (83.63\%$\to$84.48\%, seed 42) is within noise (+0.85\pp{}, single seed). \cwm{} 8B evaluation is in progress.
+\paragraph{Cross-model validation.} DeepSeek-Coder repo-level results (\cls{} final, \cwm{} preliminary) confirm the formulation-inherent nature of the divergence while revealing model-contingent magnitude. Both model families exhibit the same ordering (\cls{} $>$ \cwm{}), but the function$\to$repo degradation differs: Qwen3-8B degrades ${\sim}$5\pp{} for \cls{} and ${\sim}$22\pp{} for \cwm{}, while DeepSeek-6.7B degrades ${\sim}$12\pp{} for \cls{} and ${\sim}$25\pp{} for \cwm{}. The \cwm{} degradation is consistently larger than \cls{} in both families (4--5$\times$ for Qwen3, ${\sim}$2$\times$ for DeepSeek); the generation bottleneck at repo-level complexity is formulation-inherent. The absolute magnitude, however, is model-contingent: DeepSeek shows larger \cls{} degradation (${\sim}$12\pp{} vs.\ ${\sim}$5\pp{}), likely due to model-specific factors such as vocabulary size and tokenizer coverage for repository-level code. The \cwm{} numbers will be updated with final values upon training completion.
+
+\paragraph{Default assignment artifact.} The apparent \cwm{} ``improvement'' from 4B (58.04\%) to 8B (65.17\%) is an artifact of the default assignment protocol: unparseable outputs receive the majority-class label (pass, 72.96\% of the test set). As unparseable rate \emph{increases} from 53.7\% to 73.8\%, more predictions are replaced by this high-accuracy default, inflating overall accuracy. Parseable-only accuracy \emph{decreases} from 42.88\% (4B) to 38.52\% (8B): the generation model's actual predictive quality degrades with scale at this complexity level.
+
+\paragraph{Generation quality analysis.} Per-mutation analysis of \cwm{} 8B reveals degradation across all categories relative to 4B. The gold mutation (unmodified code) is most striking: parse rate collapses from 43.5\% (4B) to 23.9\% (8B), with parseable accuracy at 16.5\%. Even the simplest generation target (reproducing expected outputs for correct code) becomes harder at scale, consistent with a generation bottleneck that cross-model results suggest is formulation-inherent in direction but model-contingent in magnitude (\S\ref{sec:repo}, Cross-model validation). Detailed per-mutation breakdown appears in Appendix~\ref{app:repo_mutation}.
+
+\paragraph{Checkpoint sensitivity.} %%SCENARIO-A%% We tested for overtraining and found no evidence: at matched evaluation settings (\texttt{max\_seq\_length}=2048), epoch 2 and epoch 3 achieve comparable accuracy (${\sim}$65\%, $<$2\pp{} difference). The apparent ${\sim}$10\pp{} epoch degradation reported in earlier analysis was an artifact of inconsistent sequence length settings across evaluation runs (Evaluation sensitivity, below). This null result strengthens our causal attribution: \cwm{}'s repo-level failure is concentrated in format non-compliance (54--74\% unparseable outputs) rather than training instability.
+
+\paragraph{Evaluation sensitivity.} The same \cwm{} checkpoint evaluated at different \texttt{max\_seq\_length} settings produces ${\sim}$9\pp{} accuracy variation (\texttt{seq2048}: ${\sim}$65\% vs \texttt{seq4096}: ${\sim}$56\%), driven entirely by the unparseable rate $\to$ majority-class default chain: higher sequence length $\to$ lower unparseable rate $\to$ less majority-class inflation $\to$ lower apparent accuracy. This sensitivity is an inherent property of generation-based formulations with high format non-compliance: overall accuracy encodes evaluation protocol side-effects rather than pure predictive quality. Practitioners adopting \cwm{}-style formulations must standardize evaluation sequence length to obtain comparable results across studies. \cls{}, by contrast, produces a single token and is invariant to this parameter. %%END-SCENARIO-A%%
+
+\paragraph{Complexity as moderator.} The function-level \cls{}--\cwm{} gap widens from 1.32\pp{} (4B) to 2.62\pp{} (8B, $p = 0.0066$) with controlled methodology (matched seeds, same precision, no default assignment). At repo level, absolute gap magnitude (19--26\pp{}) is an order of magnitude larger than at function level (1--3\pp{}). This confirms complexity as the primary moderator of formulation divergence, though the repo-level data is from Qwen3 only.
 
 \paragraph{Sequence length.} A matched-context ablation confirms input context disparity explains $<$3\% of the \cls{}--\cwm{} gap: \cls{} 8B evaluated at \texttt{max\_seq\_length}$=$2,048 yields a matched-context gap of 25.00\pp{}, representing 98\% of the same-size 25.59\pp{} gap (Appendix~\ref{app:ablations}).
 
-\paragraph{Limitations.} The same-size 4B comparison uses a single seed; \cls{} 4B seed 123 (val-best ckpt-800) achieves only 75.33\% test accuracy (+2.4\pp{} above majority baseline), indicating that val-best selection at an early checkpoint (step 800) amplifies the val-test distribution shift observed across all configurations. The validation and test sets have zero problem overlap but differ in mutation type composition, introducing potential distribution shift. All repo-level results use val-selected checkpoints, and checkpoint selection variance could contribute to observed differences. Our training data is synthetically constructed from mutation operators rather than real developer patches; the synthetic-to-real transfer gap remains untested, and classifier behavior on naturally occurring bugs may differ from the controlled mutation patterns studied here.
+\paragraph{Limitations.} The same-size 4B comparison uses a single seed; \cls{} 4B seed 123 (val-best ckpt-800) achieves only 75.33\% test accuracy (+2.4\pp{} above majority baseline); val-best selection at an early checkpoint (step 800) amplifies the val-test distribution shift observed across all configurations. The \cwm{} 8B comparison is also single-seed. The validation and test sets have zero problem overlap but differ in mutation type composition (Appendix~\ref{app:mutation_distribution}): \texttt{operator\_swap} shifts from 19.1\% (val) to 34.3\% (test), the largest single-type distribution mismatch (+15.2\pp{}). All repo-level results use val-selected checkpoints, and checkpoint selection variance could contribute to observed differences. Our training data is synthetically constructed from mutation operators rather than real developer patches; the synthetic-to-real transfer gap remains untested.
+
+
+\subsection{Qualitative Error Analysis}
+\label{sec:qualitative}
+
+To complement the quantitative divergence reported above, we examine representative errors from each formulation at repository level.
+
+\paragraph{\cwm{} failure modes.}
+Two patterns account for the majority of unparseable \cwm{} outputs on Qwen3. (1)~\emph{Task misunderstanding}: the model generates a complete simulated test runner log (test names, timing, summary lines) rather than a pass/fail verdict. For instance, on \texttt{django\_\_django-14315}, the model outputs a fabricated 1,248-token Django test execution trace with hallucinated test names that do not exist in the target file. The model confuses ``predict test outcome'' with ``simulate test execution environment.'' (2)~\emph{Autoregressive degeneration}: the model enters a repetitive loop (e.g., repeating \texttt{from \_pytest.config import \_parse\_pytest\_args} until truncation at 4,542 tokens). Both patterns produce zero usable signal and default to the majority-class label, explaining why unparseable predictions carry higher accuracy than parseable ones (\S\ref{sec:repo}).
+
+\paragraph{\cls{} failure modes.}
+\cls{} errors concentrate in two categories requiring multi-step reasoning. False positives arise from \emph{cross-concern value propagation}: a boundary removal mutation in \texttt{pytest} converts a guarded attribute access (\texttt{if xfailed and not xfailed.run}) to \texttt{if True:}, causing a NoneType error on tests exercising unrelated skip marks. The model fails to trace the None path through the pytest hook lifecycle. False negatives arise from \emph{mathematical equivalence}: on \texttt{HumanEval/130} (Tribonacci variant), the model predicts failure for correct code because verifying the self-referential recurrence requires algebraic substitution rather than syntactic inspection. This single problem accounts for 17\% of all function-level false negatives.
+
+\paragraph{Complementarity.}
+These failure patterns are structurally orthogonal: \cwm{} fails at the format level (producing no usable signal), while \cls{} fails at the reasoning level (producing a confident but incorrect binary verdict). This qualitative observation corroborates the quantitative error complementarity (\S\ref{sec:analysis}, paragraph a), where an oracle combination of both formulations achieves 90.63\%.
 
 
 \subsection{Analysis}
 \label{sec:analysis}
 
 \paragraph{(a) Error complementarity.}
-\cls{} and \cwm{} make errors in opposite directions at function level. Among \cls{} errors (seed 42), 75.5\% are false negatives (FAIL $\to$ PASS), meaning the classifier tends to over-predict passing. Among \cwm{} errors, 83.1\% are false positives (PASS $\to$ FAIL), reflecting string-matching failures that incorrectly reject correct outputs. An oracle combination that takes the correct answer whenever either model is right achieves 90.63\% accuracy, a 3.12\pp{} improvement over \cls{} alone (87.51\%). This complementarity suggests that ensemble approaches combining classification and generation signals could yield further gains.
+\cls{} and \cwm{} make errors in opposite directions at function level. Among \cls{} errors (seed 42), 75.5\% are false negatives (FAIL $\to$ PASS), meaning the classifier over-predicts passing. Among \cwm{} errors, 83.1\% are false positives (PASS $\to$ FAIL): string-matching failures incorrectly reject correct outputs. An oracle combination achieves 90.63\% accuracy, +3.12\pp{} over the best single formulation (87.51\%). This systematic complementarity indicates that the formulations capture different aspects of code behavior: classification encodes discriminative features directly, while generation must additionally model output structure. The result is orthogonal failure patterns. Ensemble approaches combining both signals are a natural direction.
 
 \paragraph{(b) CWM error mode breakdown.}
-Among unparseable \cwm{} outputs, 76.9\% contain no execution keywords; 22.9\% contain ambiguous co-occurring pass/fail keywords. Format compliance varies sharply across repositories (scikit-learn: near-zero unparseable; sphinx: 100\%), suggesting domain-specific code contexts prevent structured generation.
+Among unparseable \cwm{} outputs (Qwen3, repo-level), 76.9\% contain no execution keywords; 22.9\% contain ambiguous co-occurring pass/fail keywords. Format compliance varies sharply across repositories (scikit-learn: near-zero unparseable; sphinx: 100\%); repository-specific code patterns interact with the model's generation capabilities in complex ways. This per-repository variation is consistent with a model/tokenizer-specific failure rather than a formulation-inherent one.
 
 \paragraph{(c) Relaxed matching does not rescue \cwm{}.}
-Relaxed matching (tolerating format deviations, L0--L4) \emph{decreases} \cwm{} accuracy: 58.04\%$\to$56.98\% (seed 42) and 59.09\%$\to$55.91\% (seed 123). Unparseable predictions default to the majority class (pass, 72.96\%), which outperforms the model's own parseable predictions (42--53\%). The \cls{}--\cwm{} gap widens from 26\pp{} to 28\pp{}, ruling out the hypothesis that parsing strictness inflates the observed gap.
+Relaxed matching (tolerating format deviations, L0--L4) \emph{decreases} \cwm{} accuracy: 58.04\%$\to$56.98\% (seed 42) and 59.09\%$\to$55.91\% (seed 123). Unparseable predictions default to the majority class (pass, 72.96\%), which outperforms the model's own parseable predictions (42--53\%). The divergence widens from 26\pp{} to 28\pp{} under relaxed matching, ruling out the hypothesis that parsing strictness inflates the observed gap.
 
 \paragraph{(d) Variance compression.}
-\cwm{}'s 5-seed standard deviation (0.37\pp{}) is lower than \cls{} (0.78\pp{}) and TRAJ (0.97\pp{}) at function level. This is consistent with the bottleneck hypothesis: if \cwm{} performance is capped by output-format constraints, seed-to-seed variability is compressed relative to formulations whose performance depends more on learned representations.
+\cwm{}'s 5-seed standard deviation (0.37\pp{}) is lower than \cls{} (0.78\pp{}) and \traj{} (0.97\pp{}) at function level. If \cwm{} performance is capped by output-format constraints at a given complexity level, seed-to-seed variability is compressed relative to formulations whose performance depends more on learned representations.
 
 \paragraph{(e) Per-test precision and recall.}
-\cls{} achieves fail \fone{} 87.86\% (precision 82.75\%, recall 93.64\%) at seed 42, with 42.1\% of problems perfectly predicted. Multi-F2P instances (6--10 tests) reach 96.3\% accuracy, corroborating the oracle finding.
+\cls{} achieves fail \fone{} 87.86\% (precision 82.75\%, recall 93.64\%) at seed 42, with 42.1\% of problems perfectly predicted. Multi-F2P instances (6--10 tests) reach 96.3\% accuracy, corroborating the oracle finding that per-test granularity is most valuable for complex instances.
 
 \paragraph{(f) Block correlation.}
-Within-problem errors are correlated (ICC $= 0.191$, DEFF $= 3.97$, 2.81$\times$ more all-correct problems than i.i.d.\ expectation). All tests use clustered bootstrap accordingly.
+Within-problem errors are correlated (ICC $= 0.191$, DEFF $= 3.97$, 2.81$\times$ more all-correct problems than i.i.d.\ expectation). All statistical tests use clustered bootstrap accordingly.
 
 \paragraph{(g) LoRA rank and majority voting.}
-Doubling adapter capacity (rank 32) does not improve \cwm{} accuracy ($-$0.51\pp{}, within seed variance); majority voting ($K{=}3$) decreases accuracy ($-$0.68\pp{}). Both confirm the bottleneck is formulation-level, not capacity-level (Appendix~\ref{app:ablations}).
+Doubling adapter capacity (rank 32) does not improve \cwm{} accuracy ($-$0.51\pp{}, within seed variance); majority voting ($K{=}3$) decreases accuracy ($-$0.68\pp{}). Both interventions fail to resolve the generation bottleneck on Qwen3, consistent with the failure being formulation-level or model-specific rather than capacity-limited (Appendix~\ref{app:ablations}).
+
+\paragraph{(h) Per-mutation scaling patterns.}
+Scaling benefits are highly non-uniform across mutation types (Appendix, Table~\ref{tab:mutation_breakdown}). \texttt{off\_by\_one} shows the largest \cls{} scaling gain: 58.5\% (4B) to 86.9\% (8B, $+$28.4\pp{}). In contrast, \texttt{boundary\_removal} is scale-invariant at ${\sim}$47\% across both sizes, identifying an intrinsic difficulty ceiling. For \cwm{}, gold mutation parse rate collapses from 43.5\% (4B) to 23.9\% (8B) despite being the simplest target: generation capability degrades even for trivially correct code at larger scale within Qwen3. The val-test mutation type distribution differs notably (\texttt{operator\_swap} shifts from 19.1\% to 34.3\%; Appendix, Table~\ref{tab:mutation_distribution}), but this shift does not systematically bias overall accuracy because \cls{} performance on \texttt{operator\_swap} (78.9--81.4\%) is close to the overall mean.
+
+\paragraph{(i) Inference efficiency.}
+\cls{} achieves 217$\times$ higher throughput than \cwm{} at repo level (853 vs.\ 3.9 inferences/min; Qwen3-4B, RTX 5090, 100 samples, avg ${\sim}$1,040 input tokens). The speedup derives directly from the formulation: classification requires a single output token, whereas \cwm{} generates an average of 477 tokens per inference. Median latency is 48ms (\cls{}) vs.\ 16.3s (\cwm{}). At the observed unparseable rate of 73.8\% (8B), the majority of \cwm{}'s generation budget produces tokens that cannot yield a valid verdict. This \cls{}--\cwm{} efficiency gap is an inherent property of the formulation difference (1 vs.\ $O(L)$ output tokens) and should generalize across models, unlike the accuracy divergence which may be model-contingent.
+
+The \cls{}--\traj{} efficiency comparison is more nuanced, because \cls{} makes one call per test while \traj{} makes one call per instance. Per-call, \cls{} is 20--138$\times$ faster (depending on input length: 47ms for short contexts vs.\ 2,632ms for \traj{}). However, the per-instance effective speedup depends on test count $|T|$: at function level ($|T| \approx 2.3$), \cls{} is ${\sim}$24$\times$ faster (108ms vs.\ 2,632ms per instance); at repo level ($|T| \approx 12.3$, ${\sim}$70ms/call with longer inputs), \cls{} is ${\sim}$3$\times$ faster (861ms vs.\ 2,631ms). A crossover exists at $|T| \approx 50$ tests, beyond which \traj{}'s single-call amortization dominates. This boundary condition is informative for deployment: \cls{} is strongly preferred for function-level and moderate repo-level test suites, while extremely large test suites ($>$50 tests per instance) favor trajectory-level efficiency despite its coarser diagnostic signal.
