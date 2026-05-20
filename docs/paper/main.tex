@@ -25,8 +25,9 @@
 \newcommand{\traj}{\textsc{Traj}}
 \newcommand{\fone}{F\textsubscript{1}}
 \newcommand{\pp}{\,\text{pp}}
+\newcommand{\tbd}{\textsc{tbd}}
 
-\title{The Formulation Design Space for Execution-Free Code Verification:\\A Controlled Empirical Study}
+\title{The Formulation Design Space for Execution-Free Code Verification:\\A Systematic Empirical Study}
 \author{Anonymous}
 
 \begin{document}
@@ -50,7 +51,7 @@
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figures/paper/fig2_scaling_gap.pdf}
-\caption{Gap amplification from function-level to repo-level complexity. Function-level: \cls{}--\cwm{} gap is 1.32\pp{} at 4B, widening to 2.62\pp{} at 8B (2 matched seeds, bootstrap $p{<}.01$). Repo-level same-size 4B: the gap explodes to 25.59\pp{}, with \cwm{} falling below the majority baseline (72.96\%).}
+\caption{Gap amplification from function to repo level. At function level, the \cls{}--\cwm{} gap is 1--3\pp{}; at repo level, it widens to 19--26\pp{} with \cwm{} falling below majority baseline.}
 \label{fig:scaling_gap}
 \end{figure}
 
@@ -60,6 +61,8 @@
 \input{conclusion}
 
 \bibliography{references}
+
+\input{checklist}
 
 \input{appendix}
 
