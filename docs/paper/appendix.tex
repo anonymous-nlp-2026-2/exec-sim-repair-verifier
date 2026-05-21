@@ -238,7 +238,7 @@ Training samples & 70,748 & 70,748 & 70,748 & 70,748 & 67,343$^a$ & 70,748 \\
 \paragraph{Mutation operators.} We use five mutation types: (1)~\emph{gold}: unmodified code (all tests pass); (2)~\emph{operator\_swap}: replaces comparison or arithmetic operators (e.g., \texttt{<} $\to$ \texttt{<=}); (3)~\emph{off\_by\_one}: shifts loop bounds or array indices by $\pm$1; (4)~\emph{return\_value}: modifies return statements (e.g., negating a boolean, changing a constant); (5)~\emph{boundary\_removal}: removes conditional guards or boundary checks. Mutation operators were applied using AST-level transformation; variants that did not alter any test outcome were discarded.
 
 \paragraph{Compute budget.}
-All experiments were conducted on NVIDIA RTX 5090 GPUs. Training time is approximately 1.5 hours per run for 4B models and 2 hours for 8B models. Total compute budget: ${\sim}$120 GPU-hours across 226 training runs and evaluations.
+All experiments were conducted on NVIDIA RTX 5090 GPUs. Training time is approximately 1.5 hours per run for 4B models and 2 hours for 8B models. Total compute budget: ${\sim}$370 GPU-hours across 223 completed runs (135 successful, 88 failed/killed; ${\sim}$46 unique configurations including seeds, formulations, model sizes, and ablations).
 
 \section{Val-Test Mutation Type Distribution}
 \label{app:mutation_distribution}
@@ -302,8 +302,17 @@ Multi-F2P instances (6--10 tests) reach 96.3\% accuracy, consistent with the ora
 \paragraph{(f) Block correlation.}
 Within-problem errors are correlated (ICC $= 0.191$, DEFF $= 3.97$, 2.81$\times$ more all-correct problems than i.i.d.\ expectation). All statistical tests use clustered bootstrap accordingly.
 
-\paragraph{(g) LoRA rank and majority voting.}
-Doubling adapter capacity (rank 32) does not improve \cwm{} accuracy ($-$0.51\pp{}, within seed variance); majority voting ($K{=}3$) decreases accuracy ($-$0.68\pp{}). Both interventions fail to resolve the generation bottleneck on Qwen3, consistent with the failure being formulation-level or model-specific rather than capacity-limited (Appendix~\ref{app:ablations}).
+\paragraph{(g) Failed interventions.}
+We systematically tested four interventions targeting different hypothesized causes of \cwm{} repo-level degradation; all failed:
+
+\begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
+\item \textbf{Capacity (rank 32):} Doubling adapter parameters does not improve accuracy ($-$0.51\pp{}, within seed variance; Appendix~\ref{app:ablations}).
+\item \textbf{Majority voting ($K{=}3$):} Accuracy \emph{decreases} by 0.68\pp{} (87.51\%$\to$86.83\%); 93.3\% of samples are unanimous across passes, and net flips are negative ($-$13), indicating errors are systematic bias rather than stochastic noise.
+\item \textbf{Relaxed matching (L0--L4):} Tolerating format deviations \emph{decreases} accuracy from 58.04\% to 56.98\% (seed 42; Appendix~\ref{app:extended_analysis}(c)), because unparseable predictions default to the majority class (pass, 72.96\%), which outperforms the model's own parseable predictions (38--43\%).
+\item \textbf{Model scaling (4B$\to$8B):} Parseable-only accuracy decreases (42.88\%$\to$38.52\%) while unparseable rate increases (53.7\%$\to$73.8\%); the apparent accuracy gain is entirely a default-assignment artifact (\S\ref{sec:repo}).
+\end{itemize}
+
+\noindent Each intervention targets a distinct alternative explanation (insufficient capacity, random noise, parsing strictness, model scale); the uniform failure across all four confirms the bottleneck is formulation-level---output space complexity at repo level exceeds what ${\leq}$8B generation models can handle, independent of these surface-level factors.
 
 \paragraph{(h) Per-mutation scaling patterns.}
 Scaling benefits are highly non-uniform across mutation types (Table~\ref{tab:mutation_breakdown}). \texttt{off\_by\_one} shows the largest \cls{} scaling gain: 58.5\% (4B) to 86.9\% (8B, $+$28.4\pp{}). In contrast, \texttt{boundary\_removal} is scale-invariant at ${\sim}$47\% across both sizes, which marks an intrinsic difficulty ceiling. For \cwm{}, gold mutation parse rate collapses from 43.5\% (4B) to 23.9\% (8B) despite being the simplest target: generation capability degrades even for trivially correct code at larger scale within Qwen3. The val-test mutation type distribution differs notably (\texttt{operator\_swap} shifts from 19.1\% to 34.3\%; Table~\ref{tab:mutation_distribution}), but this shift does not systematically bias overall accuracy because \cls{} performance on \texttt{operator\_swap} (78.9--81.4\%) is close to the overall mean.

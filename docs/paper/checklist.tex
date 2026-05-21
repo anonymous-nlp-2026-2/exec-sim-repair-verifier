@@ -36,7 +36,7 @@ Yes. Section~\ref{sec:setup}: function-level 19,076 samples (train 15,290 / val 
 \subsection*{C. Did You Run Computational Experiments?}
 
 \paragraph{C1. Did you report the number of parameters in the models used, the total computational budget, and computing infrastructure?}
-Yes. Models: Qwen3-4B (${\sim}$4B parameters, LoRA rank 16 $\approx$ 4M trainable), Qwen3-8B (${\sim}$8B), DeepSeek-Coder-6.7B (${\sim}$6.7B). Infrastructure: 4$\times$ NVIDIA RTX 5090 GPUs. Total compute: approximately 150 GPU hours across all training runs (${\sim}$40 configurations including seeds, formulations, model sizes, and ablations). Appendix~\ref{app:hyperparams} provides per-run details.
+Yes. Models: Qwen3-4B (${\sim}$4B parameters, LoRA rank 16 $\approx$ 4M trainable), Qwen3-8B (${\sim}$8B), DeepSeek-Coder-6.7B (${\sim}$6.7B). Infrastructure: 4$\times$ NVIDIA RTX 5090 GPUs. Total compute: ${\sim}$370 GPU-hours across 223 completed runs (${\sim}$46 configurations including seeds, formulations, model sizes, and ablations). Appendix~\ref{app:hyperparams} provides per-run details.
 
 \paragraph{C2. Did you discuss the experimental setup, including hyperparameter search and best-found hyperparameter values?}
 Yes. Section~\ref{sec:setup} reports the training configuration (LoRA rank 16, 3 epochs, 5 seeds with mixed precision). Appendix~\ref{app:hyperparams} provides full hyperparameter values. We use a fixed configuration rather than extensive hyperparameter search; repo-level models use validation accuracy for checkpoint selection.
