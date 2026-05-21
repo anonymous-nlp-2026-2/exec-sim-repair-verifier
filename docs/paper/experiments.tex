@@ -89,15 +89,13 @@ Beyond overall accuracy, we examine whether formulation ranking is stable across
 
 \cls{} and \traj{} both scale positively from 4B to 8B (+1.27\pp{} and +2.13\pp{} respectively), while \cwm{} remains flat ($-$0.03\pp{}). At 8B, the ranking is \cls{} (89.94) $>$ \traj{} (87.70) $>$ \cwm{} (87.33). The \cls{}--\cwm{} gap widens from 1.32\pp{} at 4B to 2.62\pp{} at 8B (Figure~\ref{fig:scaling_gap}); clustered bootstrap on the 3-seed superset (42, 123, 456 for \cls{}/\cwm{}) yields $p = 0.0066$ (95\% CI $[1.80, 2.71]$), which confirms the widening is not a sampling artifact.
 
-\cwm{} flat scaling ($-$0.03\pp{}) may reflect suboptimal hyperparameter transfer at 8B rather than a fundamental limitation; we do not claim generation \emph{cannot} benefit from scale. At function level, outputs are short (integers, booleans) and format compliance is near-perfect; at repo level, output length grows to ${\sim}$477 tokens on average, and the same generation bottleneck manifests as format collapse (51--74\% unparseable; \S\ref{sec:repo}). \traj{} also shows no scaling benefit at repo level (72.92\% at both 4B and 8B); only \cls{} scales positively across both complexity levels.
+\cwm{} flat scaling ($-$0.03\pp{}) may reflect suboptimal hyperparameter transfer at 8B rather than a fundamental limitation; we do not claim generation \emph{cannot} benefit from scale. At function level, outputs are short (integers, booleans) and format compliance is near-perfect; at repo level, output complexity increases substantially, and the same generation bottleneck manifests as format collapse patterns we examine in \S\ref{sec:repo}. \traj{} also shows no scaling benefit at repo level (72.92\% at both 4B and 8B); only \cls{} scales positively across both complexity levels.
 
 
 \subsection{Per-Test vs.\ Trajectory-Level Equivalence}
 \label{sec:equivalence}
 
 We compare \cls{} (aggregated via all-pass rule) against \traj{} on 523 variant-level instances across five seeds.\footnote{Seeds 789 and 0 use NF4 quantized inference; the remaining three use bfloat16. Restricting to bfloat16 seeds only (3 seeds) yields $p{=}0.128$: consistent in direction but underpowered due to reduced seed coverage.} The pooled gap is $-$0.45\pp{} (95\% CI [$-$1.71, +0.84]); the TOST equivalence test confirms statistical equivalence at $p = 0.007$ ($\pm$2\pp{} margin, Holm-Bonferroni corrected). Our $\pm$2\pp{} threshold follows the SESOI framework~\cite{lakens2017}, set independently of the observed gap and grounded in deployment relevance: at function-level accuracy (85--88\%), a 2\pp{} difference corresponds to ${\sim}$38 per-test predictions across 1,890 tests (${\sim}$2--3 problems out of 114)---comparable to between-seed variation (0.37--0.97\pp{} std, Table~\ref{tab:main_results}) and checkpoint selection noise ($<$1\pp{}, \S\ref{sec:threats}). A difference within this range is indistinguishable from training noise for pipeline selection decisions. Equivalence holds at margins as tight as $\pm$1.52\pp{} (Table~\ref{tab:tost_sensitivity}), well below the pre-specified threshold. Within-problem predictions are correlated (intraclass correlation ICC $= 0.191$, $p < 0.0001$, design effect (DEFF) $= 3.97$); all statistical tests use clustered bootstrap accordingly. On DeepSeek-Coder, the observed \cls{}--\cwm{} gap of 0.02\pp{} is consistent with equivalence, but with only 2 seeds the comparison is underpowered. The DeepSeek \cls{}--\traj{} gap (2.69\pp{}) exceeds the $\pm$2\pp{} margin; \traj{} parity is model-dependent rather than universal, while the \cls{}--\cwm{} equivalence is robust across both families. Per-test classification provides diagnostic information (which specific tests fail) at no cost to variant-level accuracy. This parallels process supervision~\cite{lightman2023letsverify}: step-level verification enables error localization without accuracy loss.
-
-Oracle analysis on SWE-bench Verified (500 instances) shows that per-test advantage concentrates at $T \geq 2$ fail-to-pass tests (31.3\% of instances, contributing 55.3\% of the total oracle advantage; Appendix~\ref{app:oracle}).
 
 
 \subsection{Repo-Level: Complexity-Dependent Divergence}
@@ -144,6 +142,7 @@ Zero-shot prompting collapses to an always-predict-unresolved baseline (variant 
 \caption{Repo-level failure mode taxonomy. Variant-level majority baseline: 54.17\%.}
 \label{tab:taxonomy}
 \setlength{\tabcolsep}{3pt}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{llcc}
 \toprule
 \textbf{Failure Mode} & \textbf{Representative} & \textbf{Fail Recall} & \textbf{Variant Acc} \\
@@ -153,7 +152,7 @@ Decision collapse & \cls{} (DeepSeek, s123) & ${\sim}$14\% & 56\% \\
 Aggr.\ penalty & \cls{} (Qwen3-8B) & 51--57\% & 73--81\% \\
 Aggr.\ penalty & \cls{} (DeepSeek, s42) & 38--51\% & 79--81\% \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 \paragraph{Default assignment artifact.} The apparent \cwm{} accuracy increase from 4B to 8B is an artifact of rising unparseable rate (53.7\%$\to$73.8\%), which inflates accuracy via majority-class default while parseable-only accuracy decreases (42.88\%$\to$38.52\%; Appendix~\ref{app:parseable_bias}).
@@ -170,11 +169,11 @@ Additional repo-level limitations appear in Appendix~\ref{app:limitations}.
 
 \paragraph{Aggregation penalty.} Under the all-pass rule, a single false negative flips the variant verdict. The penalty ranges from 1.36\pp{} (DeepSeek s42) to 19\pp{} (Qwen3-4B), depending on fail recall and test count (Appendix Table~\ref{tab:variant_level}). Val-based checkpoint selection biases toward per-test accuracy at the expense of fail recall, which amplifies the penalty. \traj{} avoids this by predicting variant outcomes directly (72.91--77.08\%). The penalty is predictable from test count: function-level variants ($\bar{T} \approx 2.3$) incur negligible penalty, while repo-level variants ($\bar{T} \gg 10$) incur substantial penalty, both the \emph{advantage} and \emph{cost} of per-test granularity concentrate at high $T$ (Appendix~\ref{app:extended_analysis}(a)).
 
-\paragraph{Why does generation degrade at repo level?} Output space complexity increases nonlinearly: function-level outputs are short strings (integers, booleans); repo-level outputs are unconstrained execution traces (mean ${\sim}$477 tokens) where errors compound multiplicatively, and cause format collapse (53--74\% unparseable). Even among parseable outputs, accuracy (38--43\%) is below majority baseline, which indicates a semantic gap beyond format compliance (Appendix~\ref{app:qualitative}).
+\paragraph{Why does generation degrade at repo level?} Output space complexity increases nonlinearly: function-level outputs are short strings (integers, booleans); repo-level outputs are unconstrained execution traces (mean ${\sim}$477 tokens) where errors compound multiplicatively, and cause format collapse (53--74\% unparseable). Even among parseable outputs, accuracy (38--43\%) is below majority baseline; forced parsing that rescues 90.6\% of unparseable outputs achieves only 49.4\% accuracy, confirming the bottleneck is semantic rather than syntactic (Appendix~\ref{app:extended_analysis}(c)).
 
 \cls{} achieves 217$\times$ higher throughput than \cwm{} (1 output token vs.\ avg 477), consistent across both model families.
 
-\paragraph{Error complementarity.} At function level, \cls{} and \cwm{} exhibit partial complementarity: both are FP-dominant (over-predict failure), but at different rates (\cls{} 56.5\%, \cwm{} 70.3\%; Appendix~\ref{app:extended_analysis}(a)), so \cwm{} over-predicts failure on instances \cls{} correctly classifies. An oracle combination achieves 90.63\% (+2.80\pp{} over the best single formulation; single-seed estimate). At repo level, oracle routing across configurations reaches 95.83\% variant accuracy (+14.58\pp{} over the best single configuration, $n{=}48$), the strongest evidence that the formulation design space contains complementary solutions worth exploring. A re-repair pilot found no benefit from per-test diagnostics ($n{=}44$, $p{=}0.42$; Appendix~\ref{app:extended_analysis}(j)). Extended analysis appears in Appendix~\ref{app:extended_analysis}.
+\paragraph{Error complementarity.} At function level, \cls{} and \cwm{} exhibit partial complementarity: both are FP-dominant (over-predict failure), but at different rates (\cls{} 56.5\%, \cwm{} 70.3\%; Appendix~\ref{app:extended_analysis}(a)), so \cwm{} over-predicts failure on instances \cls{} correctly classifies. An oracle combination achieves 90.63\% (+2.80\pp{} over the best single formulation; single-seed estimate). At repo level, oracle routing across configurations reaches 95.83\% variant accuracy (+14.58\pp{} over the best single configuration, $n{=}48$), the strongest evidence that the formulation design space contains complementary solutions worth exploring. On SWE-bench Verified (500 instances), the per-test advantage concentrates at $T \geq 2$ fail-to-pass tests (31.3\% of instances, contributing 55.3\% of the total oracle advantage; Appendix~\ref{app:oracle}). A re-repair pilot found no benefit from per-test diagnostics ($n{=}44$, $p{=}0.42$; Appendix~\ref{app:extended_analysis}(j)). Extended analysis appears in Appendix~\ref{app:extended_analysis}.
 
 \subsection{Threats to Validity}
 \label{sec:threats}

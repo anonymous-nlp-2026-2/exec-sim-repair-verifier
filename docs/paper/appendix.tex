@@ -64,7 +64,7 @@ $r{=}32$, $\alpha{=}64$ & 2 & 87.04 & 87.27 & 86.79 & $-$0.47 \\
 Both rank-32 variants fall within the 2-seed variance of the rank-16 baseline (0.53\pp{} between seeds 42 and 456). The $\alpha{=}64$ variant (matching the baseline $\alpha/r{=}2$ ratio) rules out the confound that the $\alpha{=}32$ result might reflect reduced effective scaling rather than rank insensitivity. This is consistent with \cwm{}'s function-level performance being bounded by output-format constraints rather than adapter capacity.
 
 \paragraph{Majority voting.}
-Majority voting ($K{=}3$) decreases accuracy from 87.51\% to 86.83\% ($-$0.68\pp{}): errors are systematic rather than stochastic, so sampling-based ensembles do not help.\footnote{These majority-voting values were computed from an unverified checkpoint and may differ slightly from the val-best checkpoint results.}
+Majority voting ($K{=}3$) decreases accuracy from 87.51\% to 86.83\% ($-$0.68\pp{}): errors are systematic rather than stochastic, so sampling-based ensembles do not help.
 
 \paragraph{Sequence-length ablation details.}
 Both formulations are trained with \texttt{max\_seq\_length}$=$2,048. At inference, \cwm{} reserves \texttt{max\_new\_tokens}$=$512, leaving ${\sim}$1,536 effective input tokens; \cls{} allocates nearly all context to input (5,120--8,192 tokens). A matched-context ablation (\cls{} 8B at 2,048 tokens) achieves 83.04\%, only 1.44\pp{} below the 8,192-token evaluation (84.48\%), though truncation introduces 136 unparseable outputs (1.39\% of test samples). The matched-context gap (\cls{}@2,048 vs.\ \cwm{}@2,048) is 25.00\pp{} (98\% of the full 25.59\pp{} gap), confirming that input context disparity explains at most 3\% of the difference.
@@ -83,6 +83,7 @@ We evaluate 3-shot in-context learning at repo level to test whether prompting s
 \caption{Repo-level prompting baselines (per-test $n{=}9{,}784$; variant-level $n{=}48$). Majority baseline: 72.96\% per-test, 54.17\% variant-level.}
 \label{tab:few_shot}
 \setlength{\tabcolsep}{4pt}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{lcccc}
 \toprule
 \textbf{Model} & \textbf{0-shot (per-test)} & \textbf{3-shot (per-test)} & \textbf{3-shot (variant)} \\
@@ -90,7 +91,7 @@ We evaluate 3-shot in-context learning at repo level to test whether prompting s
 Qwen3-8B & 49.90\% & 71.61\% & 45.83\%\textsuperscript{$\ast$} \\
 DeepSeek-6.7B & 48.54\% & 46.28\% & 45.83\%\textsuperscript{$\ast$} \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 
 \vspace{2pt}
 {\footnotesize \textsuperscript{$\ast$}Both models achieve 45.83\% by correctly classifying all 22 unresolved variants and zero resolved variants (22/48 = 45.83\%), equivalent to an always-predict-unresolved baseline. The 100\% overlap in variant-level predictions confirms complete degradation at task-relevant granularity.}
@@ -106,7 +107,7 @@ Table~\ref{tab:mutation_breakdown} compares per-mutation accuracy at repo level.
 \begin{table}[h]
 \centering
 \small
-\caption{Per-mutation test accuracy (\%) at repo level (SWE-bench Verified, $n{=}9{,}784$). \cls{} 8B reports two seeds; $\Delta$ is mean 4B$\to$8B gain for \cls{}. \cwm{} 4B per-mutation overall accuracy unavailable except gold (computed from parse rate 43.5\%, parseable acc 23.5\%).}
+\caption{Per-mutation test accuracy (\%) at repo level (SWE-bench Verified, $n{=}9{,}784$). \cls{} 8B reports two seeds; $\Delta$ is mean 4B$\to$8B gain for \cls{}. \cwm{} 4B per-mutation overall accuracy omitted for non-gold mutations due to low parse rates (4.4--56.9\%, Table~\ref{tab:cwm_mutation_parse}); gold overall accuracy derived from parse rate 43.5\% and parseable accuracy 23.5\%.}
 \label{tab:mutation_breakdown}
 \resizebox{\columnwidth}{!}{%
 \setlength{\tabcolsep}{3pt}
@@ -159,6 +160,7 @@ Table~\ref{tab:variant_level} reports variant-level accuracy ($n{=}48$) alongsid
 \caption{Repo-level per-test vs.\ variant-level accuracy ($n{=}48$ variants). Penalty = per-test $-$ variant-level. \traj{} predicts variant outcomes directly (no aggregation). Variant-level majority baseline: 54.17\% (26/48).}
 \label{tab:variant_level}
 \setlength{\tabcolsep}{3pt}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{llcccc}
 \toprule
 \textbf{Model} & \textbf{Seed} & \textbf{Per-test (\%)} & \textbf{Variant (\%)} & \textbf{Penalty (\pp{})} & \textbf{Fail Recall (\%)} \\
@@ -182,10 +184,10 @@ DeepSeek-6.7B & 3-seed & --- & 77.08 $\pm$ 3.61 & --- & --- \\
 \midrule
 Majority & --- & 72.96 & 54.17 & --- & --- \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \vspace{2pt}
 
-{\footnotesize $^\dagger$Preliminary; evaluated on ${\sim}$75\% of test instances (7210--7668 of 9784). DeepSeek \traj{} Table~\ref{tab:repo_level} reports 3 seeds (42/123/456) for alignment with \cls{}/\cwm{} seed coverage; three supplementary seeds (0/789/999) yield 75.0\%, 66.7\%, 79.2\% respectively (6-seed mean 75.35 $\pm$ 5.00\%), consistent in direction.}
+{\footnotesize $^\dagger$Evaluated on ${\sim}$75\% of test instances (7210--7668 of 9784). DeepSeek \traj{} Table~\ref{tab:repo_level} reports 3 seeds (42/123/456) for alignment with \cls{}/\cwm{} seed coverage; three supplementary seeds (0/789/999) yield 75.0\%, 66.7\%, 79.2\% respectively (6-seed mean 75.35 $\pm$ 5.00\%), consistent in direction.}
 \end{table}
 
 \section{Training Hyperparameters}
@@ -196,34 +198,42 @@ Table~\ref{tab:hyperparams} lists all hyperparameters used for fine-tuning. Both
 \begin{table}[h]
 \centering
 \small
-\caption{Training hyperparameters for \cls{}/\cwm{} configurations. Effective batch size is $\text{per-device} \times \text{grad.\ accum.} = 32$ in all cases. \traj{} models use lr $= 2{\times}10^{-4}$ due to the smaller training set (${\sim}$8K function-level instances vs.\ ${\sim}$70K for \cls{}/\cwm{}); other hyperparameters are shared.}
+\caption{Training hyperparameters for \cls{}/\cwm{} configurations. \traj{} models use lr $= 2{\times}10^{-4}$ due to the smaller training set (${\sim}$8K function-level instances vs.\ ${\sim}$70K for \cls{}/\cwm{}); other hyperparameters are shared.}
 \label{tab:hyperparams}
 \resizebox{\columnwidth}{!}{%
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{lcccccc}
+\begin{tabular}{ll}
 \toprule
-\textbf{Hyperparameter} & \textbf{Qwen3-4B \cls{}} & \textbf{Qwen3-4B \cwm{}} & \textbf{Qwen3-8B \cls{}} & \textbf{Qwen3-8B \cwm{}} & \textbf{DS-6.7B \cls{}} & \textbf{DS-6.7B \cwm{}} \\
+\multicolumn{2}{l}{\textbf{Shared across all configurations}} \\
 \midrule
-Base model & Qwen3-4B & Qwen3-4B & Qwen3-8B & Qwen3-8B & DS-Coder-6.7B & DS-Coder-6.7B \\
-LoRA rank ($r$) & 16 & 16 & 16 & 16 & 16 & 16 \\
-LoRA alpha ($\alpha$) & 32 & 32 & 32 & 32 & 32 & 32 \\
-LoRA dropout & 0.05 & 0.05 & 0.05 & 0.05 & 0.05 & 0.05 \\
-LoRA targets & \multicolumn{6}{c}{\texttt{q\_proj, k\_proj, v\_proj, o\_proj}} \\
-Learning rate & 5e-5 & 5e-5 & 5e-5 & 5e-5 & 2e-4 & 2e-4 \\
-Optimizer & \multicolumn{6}{c}{AdamW ($\beta_1{=}0.9$, $\beta_2{=}0.999$)} \\
-Weight decay & 0.01 & 0.01 & 0.01 & 0.01 & 0.0 & 0.0 \\
-Warmup ratio & 0.05 & 0.05 & 0.05 & 0.05 & 0.1 & 0.1 \\
-LR scheduler & \multicolumn{6}{c}{Linear} \\
-Per-device batch size & 2 & 1 & 1 & 1 & 2 & 1 \\
-Gradient accumulation & 16 & 32 & 32 & 32 & 16 & 32 \\
-Effective batch size & 32 & 32 & 32 & 32 & 32 & 32 \\
-Max sequence length & 2,048 & 2,048 & 2,048 & 2,048 & 2,048 & 2,048 \\
-Epochs & 3 & 3 & 3 & 3 & 3 & 3 \\
-Precision & bf16 & bf16 & bf16 & bf16 & bf16 & bf16 \\
-Gradient checkpointing & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
-Seeds (function) & \multicolumn{6}{c}{\{42, 123, 456, 789, 0\}\textsuperscript{$b$}} \\
-Seeds (repo) & \multicolumn{6}{c}{\{42, 123, 456\}\textsuperscript{$c$}} \\
-Training samples & 70,748 & 70,748 & 70,748 & 70,748 & 67,343$^a$ & 70,748 \\
+LoRA rank / alpha / dropout & 16 / 32 / 0.05 \\
+LoRA targets & \texttt{q/k/v/o\_proj} \\
+Optimizer & AdamW ($\beta_1{=}0.9$, $\beta_2{=}0.999$) \\
+LR scheduler & Linear \\
+Effective batch size & 32 \\
+Max sequence length & 2,048 \\
+Epochs & 3 \\
+Precision & bf16 \\
+Gradient checkpointing & \checkmark \\
+Seeds (function) & \{42, 123, 456, 789, 0\}\textsuperscript{$b$} \\
+Seeds (repo) & \{42, 123, 456\}\textsuperscript{$c$} \\
+\bottomrule
+\end{tabular}}
+
+\vspace{6pt}
+
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lccc}
+\toprule
+\multicolumn{4}{l}{\textbf{Model-family--specific parameters}} \\
+\midrule
+& \textbf{Qwen3-4B} & \textbf{Qwen3-8B} & \textbf{DS-6.7B} \\
+\midrule
+Learning rate & 5e-5 & 5e-5 & 2e-4 \\
+Weight decay & 0.01 & 0.01 & 0.0 \\
+Warmup ratio & 0.05 & 0.05 & 0.1 \\
+Batch / grad.\ accum.\ (\cls{}) & 2 / 16 & 1 / 32 & 2 / 16 \\
+Batch / grad.\ accum.\ (\cwm{}) & 1 / 32 & 1 / 32 & 1 / 32 \\
+Training samples & 70,748 & 70,748 & 67,343--70,748\textsuperscript{$a$} \\
 \bottomrule
 \end{tabular}}
 
@@ -251,6 +261,7 @@ Table~\ref{tab:mutation_distribution} reports the mutation type composition of t
 \caption{Repo-level mutation type distribution: validation vs.\ test set, with per-type \cls{} accuracy at two model sizes (seed 42). Shift = test\% $-$ val\%.}
 \label{tab:mutation_distribution}
 \setlength{\tabcolsep}{3pt}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{lccccc}
 \toprule
 \textbf{Mutation Type} & \textbf{Val (\%)} & \textbf{Test (\%)} & \textbf{Shift} & \textbf{\cls{} 4B} & \textbf{\cls{} 8B} \\
@@ -261,7 +272,7 @@ boundary\_removal & 15.0 & 10.7 & $-$4.3 & 46.9 & 46.9 \\
 return\_value & 10.7 & 5.7 & $-$5.0 & 68.0 & 75.4 \\
 off\_by\_one & 10.0 & 1.9 & $-$8.1 & 58.5 & 86.9 \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 The \texttt{operator\_swap} shift is the primary source of val-test distribution mismatch. Since \cls{} achieves moderate accuracy on this type (78.9--81.4\%), the over-representation in the test set does not systematically bias overall accuracy estimates in either direction. Two boundary observations are notable: (1)~\texttt{boundary\_removal} represents a scale-invariant difficulty ceiling at ${\sim}$47\% across both model sizes: this mutation type resists capacity scaling; (2)~\texttt{off\_by\_one} shows the largest scaling gain (+28.4\pp{}, 58.5\%$\to$86.9\%) but its small test share (1.9\%) limits its contribution to overall accuracy differences across scales.
@@ -290,7 +301,7 @@ These failure patterns operate at different levels: \cwm{} fails at the format l
 Among unparseable \cwm{} outputs (Qwen3, repo-level), 76.9\% contain no execution keywords; 22.9\% contain ambiguous co-occurring pass/fail keywords. Format compliance varies sharply across repositories (scikit-learn: near-zero unparseable; sphinx: 100\%); repository-specific code patterns interact with the model's generation capabilities in complex ways. This per-repository variation is consistent with a model/tokenizer-specific failure rather than a formulation-level one.
 
 \paragraph{(c) Relaxed matching does not rescue \cwm{}.}
-Relaxed matching (tolerating format deviations, L0--L4) \emph{decreases} \cwm{} accuracy: 58.04\%$\to$56.98\% (seed 42) and 59.09\%$\to$55.91\% (seed 123). Unparseable predictions default to the majority class (pass, 72.96\%), which outperforms the model's own parseable predictions (42--53\%). The divergence widens from 26\pp{} to 28\pp{} under relaxed matching. This rules out the hypothesis that parsing strictness inflates the observed gap. Constrained decoding~\cite{willard2023outlines} could enforce format compliance but would not address the semantic accuracy deficit among parseable outputs.
+Relaxed matching (tolerating format deviations, L0--L4) \emph{decreases} \cwm{} accuracy: 58.04\%$\to$56.98\% (seed 42) and 59.09\%$\to$55.91\% (seed 123). Unparseable predictions default to the majority class (pass, 72.96\%), which outperforms the model's own parseable predictions (38--43\%). The divergence widens from 26\pp{} to 27\pp{} under relaxed matching. This rules out the hypothesis that parsing strictness inflates the observed gap. Constrained decoding~\cite{willard2023outlines} could enforce format compliance but would not address the semantic accuracy deficit among parseable outputs.
 
 \paragraph{(d) Variance compression.}
 \cwm{}'s 5-seed standard deviation (0.37\pp{}) is lower than \cls{} (0.78\pp{}) and \traj{} (0.97\pp{}) at function level. If \cwm{} performance is capped by output-format constraints at a given complexity level, seed-to-seed variability is compressed relative to formulations whose performance depends more on learned representations.
@@ -306,10 +317,10 @@ Within-problem errors are correlated (ICC $= 0.191$, DEFF $= 3.97$, 2.81$\times$
 We systematically tested four interventions targeting different hypothesized causes of \cwm{} repo-level degradation; all failed:
 
 \begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
-\item \textbf{Capacity (rank 32):} Doubling adapter parameters does not improve accuracy ($-$0.51\pp{}, within seed variance; Appendix~\ref{app:ablations}).
-\item \textbf{Majority voting ($K{=}3$):} Accuracy \emph{decreases} by 0.68\pp{} (87.51\%$\to$86.83\%); 93.3\% of samples are unanimous across passes, and net flips are negative ($-$13), indicating errors are systematic bias rather than stochastic noise.
-\item \textbf{Relaxed matching (L0--L4):} Tolerating format deviations \emph{decreases} accuracy from 58.04\% to 56.98\% (seed 42; Appendix~\ref{app:extended_analysis}(c)), because unparseable predictions default to the majority class (pass, 72.96\%), which outperforms the model's own parseable predictions (38--43\%).
-\item \textbf{Model scaling (4B$\to$8B):} Parseable-only accuracy decreases (42.88\%$\to$38.52\%) while unparseable rate increases (53.7\%$\to$73.8\%); the apparent accuracy gain is entirely a default-assignment artifact (\S\ref{sec:repo}).
+\item \textbf{Capacity (rank 32):} $-$0.51\pp{}, within seed variance (\S\ref{app:ablations}).
+\item \textbf{Majority voting ($K{=}3$):} $-$0.68\pp{}; 93.3\% unanimous, net flips negative (\S\ref{app:ablations}).
+\item \textbf{Relaxed matching (L0--L4):} $-$1.06\pp{}; default-pass outperforms parseable predictions (paragraph~(c) above).
+\item \textbf{Model scaling (4B$\to$8B):} parseable accuracy decreases (42.88\%$\to$38.52\%) while unparseable rate rises (53.7\%$\to$73.8\%); gain is a default-assignment artifact (\S\ref{sec:repo}).
 \end{itemize}
 
 \noindent Each intervention targets a distinct alternative explanation (insufficient capacity, random noise, parsing strictness, model scale); the uniform failure across all four confirms the bottleneck is formulation-level---output space complexity at repo level exceeds what ${\leq}$8B generation models can handle, independent of these surface-level factors.
@@ -365,6 +376,7 @@ Table~\ref{tab:variant_power} reports variant-level bootstrap confidence interva
 \caption{Variant-level bootstrap analysis ($n{=}48$). \cls{}--\cwm{} uses paired bootstrap (same variants, same seed); \cls{}--\traj{} uses unpaired bootstrap (per-variant \traj{} predictions not archived for pairing). MDE at $n{=}48$: ${\sim}$25\pp{}.}
 \label{tab:variant_power}
 \setlength{\tabcolsep}{3pt}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{llccc}
 \toprule
 \textbf{Comparison} & \textbf{Config} & \textbf{$\Delta$ (\pp{})} & \textbf{95\% CI} & \textbf{$p$} \\
@@ -378,7 +390,7 @@ Table~\ref{tab:variant_power} reports variant-level bootstrap confidence interva
 & Qwen3-8B & +8.33 & wide & 0.385 \\
 & DeepSeek-6.7B & 0.00 & wide & 1.000 \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 At $n{=}48$, the MDE is ${\sim}$25\pp{}. The \cls{}--\cwm{} gap (29--35\pp{}) exceeds this threshold, confirming that $n{=}48$ is sufficient to detect the observed divergence. The \cls{}--\traj{} gaps ($<$10\pp{}) fall well below the MDE: any true difference is too small to detect at this sample size, consistent with the function-level TOST equivalence (\S\ref{sec:equivalence}).
@@ -397,6 +409,7 @@ Table~\ref{tab:holm} applies Holm-Bonferroni correction~\cite{holm1979} to the f
 \caption{Holm-Bonferroni correction for primary comparisons ($k{=}4$). Comparisons ranked by raw $p$-value; each tested against $\alpha / (k - \text{rank} + 1)$.}
 \label{tab:holm}
 \setlength{\tabcolsep}{3pt}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{clcccc}
 \toprule
 \textbf{Rank} & \textbf{Comparison} & \textbf{Raw $p$} & \textbf{Factor} & \textbf{Adj $p$} & \textbf{Sig.?} \\
@@ -406,7 +419,7 @@ Table~\ref{tab:holm} applies Holm-Bonferroni correction~\cite{holm1979} to the f
 3 & Repo: \cwm{} vs \traj{} & 0.039 & $\times$2 & 0.078 & --- \\
 4 & Repo: \cls{} vs \traj{} & 0.385 & $\times$1 & 0.385 & --- \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 The two core claims survive correction: the repo-level \cls{}--\cwm{} gap (adjusted $p{=}0.012$) and function-level \cls{}--\traj{} equivalence (adjusted $p{=}0.021$). The repo-level \cwm{}--\traj{} comparison does not survive correction (adjusted $p{=}0.078$); we interpret this difference as directionally consistent but not confirmatory.
@@ -433,7 +446,7 @@ We identify five potential confounds and assess their impact on our conclusions.
 
 \paragraph{Checkpoint selection.} Val-based selection is unavailable for runs with NaN validation loss (all \cwm{} repo-level runs, DeepSeek \cls{} s123), which default to the final epoch checkpoint. A checkpoint ablation on Qwen3-8B \cls{} s42 quantifies this confound: epoch~1 (ckpt-2200) achieves 85.34\%, val-selected (ckpt-3600) 84.48\%, and final epoch (ckpt-6633) 85.29\%---a $<$1\pp{} range. The val-selected checkpoint is the lowest, indicating no upward bias from checkpoint selection. The Qwen3-8B \traj{} comparison (epoch 2: 72.92\% vs.\ epoch 3: 70.83\%) shows a slightly larger ${\sim}$2\pp{} shift.
 
-\paragraph{Evaluation sequence length.} \cwm{} accuracy varies by ${\sim}$9\pp{} across evaluation sequence lengths for the same checkpoint (seq2048: ${\sim}$65\% vs.\ seq4096: ${\sim}$56\%), driven by unparseable-rate differences that propagate through majority-class default assignment. \cls{} is invariant to this parameter. Cross-model \cwm{} comparisons use different eval lengths (Qwen3: 8192, DeepSeek: 4096) and are not directly comparable in absolute terms. A matched-sequence evaluation shows ${\sim}$1.5\pp{} difference for \cls{} (Appendix~\ref{app:ablations}), insufficient to explain the 19--26\pp{} gap. Furthermore, increasing Qwen3-8B \cwm{} evaluation from seq4096 to seq8192 \emph{raises} the unparseable rate (63.7\%$\to$74\%) while changing accuracy by only 0.81\pp{} (64.36\%$\to$65.17\%); giving the model more generation budget worsens format compliance rather than improving it, confirming that format collapse is a structural bottleneck rather than a truncation artifact. Practitioners must standardize evaluation sequence length for generation-based formulations.
+\paragraph{Evaluation sequence length.} \cwm{} accuracy varies by ${\sim}$9\pp{} across evaluation sequence lengths for the same checkpoint (seq2048: ${\sim}$65\% vs.\ seq4096: ${\sim}$56\%), driven by unparseable-rate differences that propagate through majority-class default assignment. \cls{} is invariant to this parameter. Cross-model \cwm{} comparisons use different eval lengths (Qwen3: 8192, DeepSeek: 4096) and are not directly comparable in absolute terms. A matched-sequence evaluation shows ${\sim}$1.5\pp{} difference for \cls{} (Appendix~\ref{app:ablations}), insufficient to explain the 19--26\pp{} gap. Furthermore, increasing Qwen3-8B \cwm{} evaluation from seq4096 to seq8192 \emph{raises} the unparseable rate (63.7\%$\to$73.8\%) while changing accuracy by only 0.81\pp{} (64.36\%$\to$65.17\%); giving the model more generation budget worsens format compliance rather than improving it, confirming that format collapse is a structural bottleneck rather than a truncation artifact. Practitioners must standardize evaluation sequence length for generation-based formulations.
 
 \paragraph{Preprocessing.} DeepSeek \cls{} accuracy ranges from 82.61\% (s42, drop preprocessing) to 74.93\% (s123, truncate preprocessing), a 7.68\pp{} spread that conflates preprocessing strategy, checkpoint selection method, and seed. The two strategies produce different effective training sets (67,343 vs.\ 70,748 samples) and different checkpoint selection regimes. The qualitative ranking \cls{} $>$ \cwm{} holds under both strategies (Table~\ref{tab:taxonomy}).
 
@@ -447,4 +460,4 @@ Despite these confounds, the repo-level \cls{}--\cwm{} gap (19--26\pp{}) exceeds
 \section{Extended Limitations}
 \label{app:limitations}
 
-The same-size 4B comparison uses a single seed; \cls{} 4B seed 123 (val-best ckpt-800) achieves only 75.33\% test accuracy (+2.4\pp{} above majority baseline); val-best selection at an early checkpoint (step 800) amplifies the val-test distribution shift observed across all configurations. The \cwm{} 8B comparison is also single-seed. The validation and test sets have zero problem overlap but differ in mutation type composition (Table~\ref{tab:mutation_distribution}): \texttt{operator\_swap} shifts from 19.1\% (val) to 34.3\% (test), the largest single-type distribution mismatch (+15.2\pp{}). All repo-level results use val-selected checkpoints, and checkpoint selection variance could contribute to observed differences. Our training data is synthetically constructed from mutation operators rather than real developer patches. While mutation testing literature establishes that mutants are reasonable proxies for real faults in test effectiveness studies~\cite{andrews2005mutation,just2014mutants}, these findings concern mutation \emph{adequacy} (whether tests that kill mutants also detect real faults), not whether verifiers trained on mutants transfer to real patches. However, the coupling effect underlying these results supports \emph{relative ranking} validity: a domain shift from synthetic mutations to real bugs may affect absolute accuracy levels, but our core finding---that formulation choice matters at repo level but not function level---concerns relative performance ordering, which is expected to be preserved under distributional shifts that affect all formulations equally. The synthetic-to-real transfer gap for absolute accuracy remains untested. The \traj{} training configuration differs from \cls{}/\cwm{}: smaller training set (${\sim}$400 vs.\ ${\sim}$70K instances), different learning rate ($2{\times}10^{-4}$ vs.\ $5{\times}10^{-5}$), and variant-level evaluation ($n{=}48$ vs.\ per-test $n{=}9{,}784$). The function-level TOST equivalence ($p = 0.007$, $\pm$2\pp{}) is computed on 523 matched variant-level instances across 5 seeds; 2 of 5 seeds use NF4 quantization. Restricting to three bfloat16 seeds yields a comparable mean gap ($-$0.45\pp{}) but wider confidence interval (df${=}$2); the TOST $p$-value increases from 0.007 to 0.128, which reflects reduced statistical power rather than a shift in the point estimate. The NF4 seeds contribute precision (narrowing the CI) without shifting the mean, consistent with precision being comparable across both quantization levels at function level. Repo-level \cls{}--\traj{} comparison is preliminary due to configuration and granularity differences.
+The same-size 4B comparison uses a single seed; \cls{} 4B seed 123 (val-best ckpt-800) achieves only 75.33\% test accuracy (+2.4\pp{} above majority baseline); val-best selection at an early checkpoint (step 800) amplifies the val-test distribution shift observed across all configurations. The \cwm{} 8B comparison is also single-seed. The validation and test sets have zero problem overlap but differ in mutation type composition (Table~\ref{tab:mutation_distribution}): \texttt{operator\_swap} shifts from 19.1\% (val) to 34.3\% (test), the largest single-type distribution mismatch (+15.2\pp{}). All repo-level results use val-selected checkpoints, and checkpoint selection variance could contribute to observed differences. Our training data is synthetically constructed from mutation operators rather than real developer patches. While mutation testing literature establishes that mutants are reasonable proxies for real faults in test effectiveness studies~\cite{andrews2005mutation,just2014mutants}, these findings concern mutation \emph{adequacy} (whether tests that kill mutants also detect real faults), not whether verifiers trained on mutants transfer to real patches. However, the coupling effect underlying these results supports \emph{relative ranking} validity: a domain shift from synthetic mutations to real bugs may affect absolute accuracy levels, but our core finding---that formulation choice matters at repo level but not function level---concerns relative performance ordering, which is expected to be preserved under distributional shifts that affect all formulations equally. The synthetic-to-real transfer gap for absolute accuracy remains untested. The \traj{} training configuration differs from \cls{}/\cwm{}: smaller training set (${\sim}$400 vs.\ ${\sim}$70K instances), different learning rate ($2{\times}10^{-4}$ vs.\ $5{\times}10^{-5}$), and variant-level evaluation ($n{=}48$ vs.\ per-test $n{=}9{,}784$). The function-level TOST equivalence ($p = 0.007$, $\pm$2\pp{}) is computed on 523 matched variant-level instances across 5 seeds; 2 of 5 seeds use NF4 quantization. Restricting to three bfloat16 seeds yields a comparable mean gap ($-$0.45\pp{}) but wider confidence interval (df${=}$2); the TOST $p$-value increases from 0.007 to 0.128, which reflects reduced statistical power rather than a shift in the point estimate. The NF4 seeds contribute precision (narrowing the CI) without shifting the mean, consistent with precision being comparable across both quantization levels at function level. Repo-level \cls{}--\traj{} comparison should be interpreted with caution due to configuration and granularity differences.
