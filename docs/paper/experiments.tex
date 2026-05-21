@@ -63,7 +63,7 @@ All three formulations achieve comparable accuracy on Qwen3-4B: \cls{} 88.43\% (
 \subsection{Scaling Behavior}
 \label{sec:scaling}
 
-Table~\ref{tab:scaling} compares all three formulations at two model sizes using seeds 42 and 123, both trained in full bfloat16 precision (excluding NF4 seeds to isolate the size effect).
+Beyond overall accuracy, we examine whether formulation ranking is stable across model sizes. Table~\ref{tab:scaling} compares all three formulations at 4B and 8B using seeds 42 and 123 in full bfloat16 precision (excluding NF4 seeds to isolate the size effect).
 
 \begin{table}[t]
 \centering
