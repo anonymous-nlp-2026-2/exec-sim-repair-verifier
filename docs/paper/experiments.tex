@@ -101,13 +101,13 @@ We test pairwise equivalence among formulations on 523 variant-level instances a
 
 \paragraph{\cls{}--\traj{} equivalence.} The pooled gap is $-$0.45\pp{} (95\% CI [$-$1.71, +0.84]); TOST yields $p = 0.025$ ($\pm$2\pp{}), nominally significant but not surviving Holm-Bonferroni correction ($k{=}5$, adjusted $p{=}0.075$; Table~\ref{tab:holm}). The DeepSeek \cls{}--\traj{} gap (2.69\pp{}) exceeds the $\pm$2\pp{} margin; \traj{} parity is model-dependent. Per-test classification provides diagnostic information (which tests fail) at no cost to variant-level accuracy, paralleling process supervision~\cite{lightman2023letsverify}.
 
-\paragraph{Statistical power considerations.} With $n_{\text{eff}} \approx 86$ independent observations after clustering (DEFF $= 3.97$), the TOST at $\pm$2\pp{} achieves power ${\sim}$0.3 for a medium effect size~\cite{cohen1988}---a 70\% probability of failing to confirm equivalence even if the true difference is moderate. The CLS--CWM equivalence ($p{=}0.007$) is robust to this limitation; the CLS--TRAJ non-confirmation ($p{=}0.075$) may reflect insufficient power rather than a genuine difference. Increasing seed coverage or cluster count would resolve this ambiguity.
+\paragraph{Statistical power considerations.} With $n_{\text{eff}} \approx 86$ independent observations after clustering (DEFF $= 3.97$), the TOST at $\pm$2\pp{} achieves power ${\sim}$0.3 for a medium effect size~\cite{cohen1988}---a 70\% probability of failing to confirm equivalence even if the true difference is moderate. The CLS--CWM equivalence ($p{=}0.007$) is robust to this limitation; the CLS--TRAJ non-confirmation ($p{=}0.075$) may reflect insufficient power rather than a genuine difference. A Bayesian ROPE analysis corroborates these conclusions ($P(\text{ROPE}){=}0.975$ for CLS--CWM; Appendix~\ref{app:bayesian_rope}).
 
 
 \subsection{Repo-Level: Complexity-Dependent Divergence}
 \label{sec:repo}
 
-Table~\ref{tab:repo_level} compares formulations at repository-level complexity. Variant-level comparisons rely on limited seed coverage; the per-test interaction effect is statistically confirmed (see below). Checkpoints are val-selected where validation loss is computable (\S\ref{sec:setup}); the test set has zero problem overlap with validation.
+Table~\ref{tab:repo_level} compares formulations at repository-level complexity. Variant-level comparisons ($n{=}48$) are exploratory due to limited seed coverage; the per-test interaction effect is statistically confirmed (see below). Checkpoints are val-selected where validation loss is computable (\S\ref{sec:setup}); the test set has zero problem overlap with validation.
 
 \begin{table}[t]
 \centering
