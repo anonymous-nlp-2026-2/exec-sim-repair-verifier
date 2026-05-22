@@ -8,7 +8,7 @@ This paper follows the ARR Responsible NLP Research checklist.
 \subsection*{A. For Every Submission}
 
 \paragraph{A1. Did you describe the limitations of your work?}
-Yes. Section~\ref{sec:conclusion} (Limitations paragraph) discusses: single-seed repo-level comparisons, synthetic-to-real transfer gap, lack of downstream re-repair validation, and val-test mutation distribution mismatch. Section~\ref{sec:repo} (Limitations paragraph) discusses val-best checkpoint selection variance and single-seed constraints.
+Yes. Section~\ref{sec:conclusion} (Limitations paragraph) discusses: limited seed coverage for repo-level comparisons, synthetic-to-real transfer gap, lack of downstream re-repair validation, and val-test mutation distribution mismatch. Section~\ref{sec:repo} (Limitations paragraph) discusses val-best checkpoint selection variance and seed coverage.
 
 \paragraph{A2. Did you discuss any potential risks of your work?}
 This work compares formulations for execution-free code verification on public benchmarks. The primary application is improving automated program repair pipelines. We identify no significant risks: the methods predict test outcomes rather than generating executable code, the datasets are derived from open-source repositories, and no personally identifiable information is involved. Misuse potential is limited because the verifiers require task-specific fine-tuning on labeled data and do not generalize to arbitrary code generation.
