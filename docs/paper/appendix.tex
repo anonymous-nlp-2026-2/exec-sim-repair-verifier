@@ -250,6 +250,71 @@ Training samples & 70,748 & 70,748 & 67,343--70,748\textsuperscript{$a$} \\
 \paragraph{Compute budget.}
 All experiments were conducted on NVIDIA RTX 5090 GPUs. Training time is approximately 1.5 hours per run for 4B models and 2 hours for 8B models. Total compute budget: ${\sim}$370 GPU-hours across 223 completed runs (135 successful, 88 failed/killed; ${\sim}$46 unique configurations including seeds, formulations, model sizes, and ablations).
 
+\section{Prompt Templates}
+\label{app:prompts}
+
+We show representative prompt examples for each formulation. All examples use the same input instance for comparability.
+
+\paragraph{CLS (per-test classification).}
+\begin{verbatim}
+System: You are a code verifier. Given a
+code patch and a test name, predict whether
+the test will pass or fail when run against
+the patched code.
+
+User:
+## Patch (git diff)
+<patch content>
+[... truncated ...]
+
+## Test
+test_boundary_check
+
+Will this test pass or fail?
+
+Target: pass
+\end{verbatim}
+
+\paragraph{CWM (execution simulation).}
+\begin{verbatim}
+System: You are a code execution simulator.
+Given a code snippet and a test case,
+predict the execution result.
+
+User:
+## Code
+<code content>
+[... truncated ...]
+
+## Test
+test_boundary_check
+
+What is the execution result?
+
+Target: PASS: test completed successfully
+\end{verbatim}
+
+\paragraph{TRAJ (trajectory scoring).}
+\begin{verbatim}
+System: You are a code repair verifier.
+Given the code patch and test summary,
+predict whether all tests pass (resolved)
+or any test fails (unresolved).
+
+User:
+[Code]
+<patch content>
+[... truncated ...]
+
+[Test Summary]
+<all test names and descriptions>
+
+Target: resolved
+\end{verbatim}
+
+\cls{} and \cwm{} share the same input format (one code--test pair per instance); \cls{} produces a single token (\texttt{pass}/\texttt{fail}), while \cwm{} generates a variable-length execution trace. \traj{} receives all tests concatenated and produces a single token (\texttt{resolved}/\texttt{unresolved}).
+
+
 \section{Val-Test Mutation Type Distribution}
 \label{app:mutation_distribution}
 
@@ -431,7 +496,7 @@ The two core claims survive correction: the repo-level \cls{}--\cwm{} divergence
 \section{Mixed-Effects Regression}
 \label{app:interaction}
 
-We fit mixed-effects linear probability models (LPM) to test the formulation$\times$complexity interaction formally. We choose LPM because coefficients are directly interpretable as probability differences (percentage points), consistent with the reporting units in the main text; at these sample sizes ($n{\approx}56$K cross-complexity, repo-level pooled cross-model) and base rate range (0.6--0.9), LPM and logistic regression yield identical significance conclusions~\cite{angrist2009mostly}.
+We fit mixed-effects linear probability models (LPM) to test the formulation$\times$complexity interaction formally. We choose LPM because coefficients are directly interpretable as probability differences (percentage points), consistent with the reporting units in the main text; at these sample sizes ($n{\approx}56$K cross-complexity, repo-level pooled cross-model) and base rate range (0.6--0.9), We use heteroskedasticity-robust standard errors (HC1) throughout. LPM and logistic regression yield identical significance conclusions~\cite{angrist2009mostly}.
 
 \paragraph{Cross-complexity model (DeepSeek-Coder).} \texttt{correct $\sim$ formulation $\times$ complexity + (1|problem\_id)}, $n{=}56{,}480$ observations (\cls{} + \cwm{} $\times$ function + repo), 139 problem clusters. The \cwm{} main effect at function level is non-significant ($\hat{\beta}{=}-0.002$, $z{=}-0.25$, $p{=}0.805$); the \cwm{}$\times$repo interaction is highly significant ($\hat{\beta}{=}-0.219$, $z{=}-23.7$, $p{<}0.001$). \cwm{} and \cls{} are statistically indistinguishable at function level ($\Delta{=}-0.2$\pp{}, $p{=}0.805$) but diverge by 22\pp{} at repo level, confirming the complexity-dependent divergence is not an artifact of aggregation.
 

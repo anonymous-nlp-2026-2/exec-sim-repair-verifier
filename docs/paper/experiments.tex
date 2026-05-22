@@ -68,7 +68,7 @@ Beyond overall accuracy, we examine whether formulation ranking is stable across
 \begin{table}[t]
 \centering
 \small
-\caption{Model-size scaling: accuracy (\%) at 4B and 8B (Qwen3, seeds 42/123, full bfloat16 precision). \cls{} and \traj{} scale positively; \cwm{} does not.}
+\caption{Model-size scaling: accuracy (\%) at 4B and 8B (Qwen3, seeds 42/123, full bfloat16 precision). \cls{} and \traj{} scale positively; \cwm{} does not. \cwm{} scaling comparison is exploratory ($n{=}2$ seeds per size).}
 \label{tab:scaling}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{llcccc}
@@ -95,7 +95,7 @@ Beyond overall accuracy, we examine whether formulation ranking is stable across
 \subsection{Function-Level Equivalence}
 \label{sec:equivalence}
 
-We test pairwise equivalence among formulations on 523 variant-level instances across five seeds.\footnote{Seeds 789 and 0 use NF4 quantized inference; the remaining three use bfloat16. Restricting to bfloat16 seeds only (3 seeds): \cls{}--\cwm{} remains significant ($p{<}0.05$); \cls{}--\traj{} yields $p{=}0.128$, consistent in direction but underpowered due to reduced seed coverage.} Our $\pm$2\pp{} threshold follows the SESOI framework~\cite{lakens2017}, set independently of the observed gap and grounded in deployment relevance: at function-level accuracy (85--88\%), a 2\pp{} difference corresponds to ${\sim}$38 per-test predictions across 1,890 tests (${\sim}$2--3 problems out of 114)---comparable to between-seed variation (0.37--0.97\pp{} std, Table~\ref{tab:main_results}) and checkpoint selection noise ($<$1\pp{}, \S\ref{sec:threats}). A difference within this range is indistinguishable from training noise for pipeline selection decisions.
+We test pairwise equivalence among formulations on 523 variant-level instances across five seeds.\footnote{Seeds 789 and 0 use NF4 quantized inference; the remaining three use bfloat16. Restricting to bfloat16 seeds only (3 seeds): \cls{}--\cwm{} remains significant ($p{<}0.05$); \cls{}--\traj{} yields $p{=}0.128$, consistent in direction but underpowered due to reduced seed coverage. Both TOST tests use the same $\pm$2\pp{} margin.} Our $\pm$2\pp{} threshold follows the SESOI framework~\cite{lakens2017}, set independently of the observed gap and grounded in deployment relevance: at function-level accuracy (85--88\%), a 2\pp{} difference corresponds to ${\sim}$38 per-test predictions across 1,890 tests (${\sim}$2--3 problems out of 114)---comparable to between-seed variation (0.37--0.97\pp{} std, Table~\ref{tab:main_results}) and checkpoint selection noise ($<$1\pp{}, \S\ref{sec:threats}). A difference within this range is indistinguishable from training noise for pipeline selection decisions.
 
 \paragraph{\cls{}--\cwm{} equivalence.} The pooled gap is 1.24\pp{} (88.43\%--87.19\%); TOST confirms statistical equivalence at $p = 0.007$ ($\pm$2\pp{} margin). After Holm-Bonferroni correction ($k{=}5$), the adjusted $p{=}0.028$ remains significant (Table~\ref{tab:holm}). \cls{} and \cwm{} are robustly equivalent at function level: classification is not inherently easier than generation when outputs are short. Equivalence holds at margins as tight as $\pm$1.52\pp{} (Table~\ref{tab:tost_sensitivity}), well below the pre-specified threshold. On DeepSeek-Coder, the observed \cls{}--\cwm{} gap of 0.02\pp{} is consistent with equivalence, but with only 2 seeds the comparison is underpowered.
 
