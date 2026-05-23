@@ -17,6 +17,7 @@
 
 % Graphics
 \usepackage{graphicx}
+\usepackage{xcolor}
 \graphicspath{{../../artifacts/}}
 
 % Lists
@@ -29,6 +30,7 @@
 \newcommand{\fone}{F\textsubscript{1}}
 \newcommand{\pp}{\,\text{pp}}
 \newcommand{\tbd}{\textsc{tbd}}
+\newcommand{\placeholder}[1]{{\color{red}\texttt{[#1]}}}
 
 \title{A Systematic Comparison of Execution-Free Verification Formulations for Code Repair}
 \author{Anonymous}
@@ -51,13 +53,6 @@
 
 \input{experiments}
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{figures/paper/fig2_scaling_gap.pdf}
-\caption{Gap amplification from function to repo level. At function level, the \cls{}--\cwm{} gap is 1--3\pp{}; at repo level, it widens to 18--26\pp{} with \cwm{} falling below majority baseline.}
-\label{fig:scaling_gap}
-\end{figure}
-
 
 \input{related_work}
 
@@ -65,7 +60,8 @@
 
 \bibliography{references}
 
-\input{checklist}
+% ARR checklist is filled in OpenReview submission form, not in PDF
+% \input{checklist}
 
 \input{appendix}
 

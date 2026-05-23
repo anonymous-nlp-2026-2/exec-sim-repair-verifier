@@ -8,7 +8,7 @@ This paper follows the ARR Responsible NLP Research checklist.
 \subsection*{A. For Every Submission}
 
 \paragraph{A1. Did you describe the limitations of your work?}
-Yes. Section~\ref{sec:conclusion} (Limitations paragraph) discusses: limited seed coverage for repo-level comparisons, synthetic-to-real transfer gap, lack of downstream re-repair validation, and val-test mutation distribution mismatch. Section~\ref{sec:repo} (Limitations paragraph) discusses val-best checkpoint selection variance and seed coverage.
+Yes. Section~\ref{sec:conclusion} (Limitations paragraph) discusses: ${\leq}$8B LoRA scope and generalization beyond this regime, Python-only evaluation domain, and synthetic mutation vs.\ real bug representativeness. Section~\ref{sec:threats} discusses checkpoint selection, preprocessing, and seed coverage. Extended validity discussion in Appendix~\ref{app:limitations}.
 
 \paragraph{A2. Did you discuss any potential risks of your work?}
 This work compares formulations for execution-free code verification on public benchmarks. The primary application is improving automated program repair pipelines. We identify no significant risks: the methods predict test outcomes rather than generating executable code, the datasets are derived from open-source repositories, and no personally identifiable information is involved. Misuse potential is limited because the verifiers require task-specific fine-tuning on labeled data and do not generalize to arbitrary code generation.
@@ -42,7 +42,7 @@ Yes. Models: Qwen3-4B (${\sim}$4B parameters, LoRA rank 16 $\approx$ 4M trainabl
 Yes. Section~\ref{sec:setup} reports the training configuration (LoRA rank 16, 3 epochs, 5 seeds with mixed precision). Appendix~\ref{app:hyperparams} provides full hyperparameter values. We use a fixed configuration rather than extensive hyperparameter search; repo-level models use validation accuracy for checkpoint selection.
 
 \paragraph{C3. Did you report descriptive statistics about your results with, e.g., error bars or confidence intervals?}
-Yes. All multi-seed results report mean $\pm$ standard deviation. Confidence intervals use clustered bootstrap (114 problem clusters, 10K resamples; Section~\ref{sec:setup}). Equivalence testing uses TOST ($p = 0.007$, $\pm$2\pp{} margin; Section~\ref{sec:equivalence}). ICC quantifies within-problem correlation with design effect reported.
+Yes. All multi-seed results report mean $\pm$ standard deviation. Confidence intervals use clustered bootstrap (114 problem clusters, 10K resamples; Section~\ref{sec:setup}). Equivalence testing uses TOST with $\pm$2\pp{} margin and seed-level paired analysis (\cls{}--\cwm{} $p{=}0.007$, \cls{}--\traj{} $p{=}0.025$; Section~\ref{sec:equivalence}). ICC quantifies within-problem correlation with design effect reported.
 
 \paragraph{C4. If you used existing packages, did you report the implementation and version numbers?}
 Yes. Implementation uses HuggingFace Transformers (${\geq}$4.44), PEFT (${\geq}$0.12), PyTorch (${\geq}$2.0), bitsandbytes (${\geq}$0.43, for NF4 quantization), and Python 3.10. LoRA~\cite{hu2022lora} and QLoRA~\cite{dettmers2024qlora} configurations are detailed in Appendix~\ref{app:hyperparams}. Exact version pinning is provided in the code repository.
@@ -54,4 +54,4 @@ Not applicable. This work uses no human annotators or participants. All labels a
 \subsection*{E. AI Assistants}
 
 \paragraph{E1. Did you use AI assistants (e.g., ChatGPT, Copilot) in any part of the paper writing or coding process?}
-Yes. AI coding assistants were used during development of training and evaluation scripts. AI writing assistants were used for drafting and editing portions of the manuscript. All scientific claims, experimental design, and analysis were conducted and verified by the authors.
+Yes. See Appendix~\ref{app:ai-assistants} for details on the AI assistant (Claude, Anthropic) used for code development, writing, and literature summarization.
