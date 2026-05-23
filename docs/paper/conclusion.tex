@@ -1,7 +1,7 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-We presented the first systematic comparison of three execution-free verification formulations (\cls{}, \cwm{}, \traj{}) under ${\leq}$8B LoRA fine-tuning. At function level, \cls{} and \cwm{} are statistically equivalent (TOST $p{=}0.007$, 5 seeds); \traj{} equivalence is inconclusive after Holm correction. At repository level, divergence reaches 18--26\pp{} ($z{=}-23.7$), consistent across families (\S\ref{sec:threats}). Preliminary 14B results (3 seeds, single family) narrow all gaps to within 1.07\pp{}; whether the repo-level divergence is formulation-inherent or capacity-contingent remains open. Future directions include complexity-aware routing, scaling to 32B+~\cite{meta2025cwm}, and per-test diagnostics for downstream repair.
+We presented the first systematic comparison of three execution-free verification formulations (\cls{}, \cwm{}, \traj{}) under ${\leq}$8B LoRA fine-tuning. At function level, \cls{} and \cwm{} are statistically equivalent (TOST $p{=}0.007$, 5 seeds); \traj{} equivalence is inconclusive after Holm correction. At repository level, divergence reaches 18--26\pp{} ($z{=}-23.7$) via three failure modes, consistent across families (\S\ref{sec:threats}). 14B results (3 seeds, single family) narrow all gaps to 1.07\pp{}; whether the repo-level divergence is formulation-inherent or capacity-contingent remains open. This contrasts with math reasoning~\cite{hosseini2025genrm}; scaling to 32B+~\cite{meta2025cwm} and complexity-aware routing are key open questions.
 
 \section*{Limitations}
 
