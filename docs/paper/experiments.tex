@@ -67,6 +67,13 @@ All three formulations achieve comparable accuracy on Qwen3-4B: \cls{} 88.43\% (
 
 Beyond overall accuracy, we examine whether formulation ranking is stable across model sizes. Table~\ref{tab:scaling} compares all three formulations at 4B, 8B, and 14B. The 4B and 8B rows use seeds 42 and 123; the 14B row uses seeds 42, 123, and 456. All rows use bfloat16 inference.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/paper/figure2_v3.pdf}
+\caption{Function-level accuracy scaling (4B--14B). CLS and CWM accuracy with shaded gap region; $y$-axis does not start at zero. The \cls{}--\cwm{} gap shows a non-monotonic pattern: 1.32\pp{} at 4B, widening to 2.62\pp{} at 8B, then narrowing to 0.43\pp{} at 14B (3 seeds).}
+\label{fig:scaling_gap}
+\end{figure}
+
 \begin{table}[t]
 \centering
 \small
@@ -91,13 +98,6 @@ Beyond overall accuracy, we examine whether formulation ranking is stable across
 \bottomrule
 \end{tabular}
 \end{table}
-
-\begin{figure}[!t]
-\centering
-\includegraphics[width=\columnwidth]{figures/paper/figure2_v3.pdf}
-\caption{Function-level accuracy scaling (4B--14B). CLS and CWM accuracy with shaded gap region; $y$-axis does not start at zero. The \cls{}--\cwm{} gap shows a non-monotonic pattern: 1.32\pp{} at 4B, widening to 2.62\pp{} at 8B, then narrowing to 0.43\pp{} at 14B (3 seeds).}
-\label{fig:scaling_gap}
-\end{figure}
 
 \cls{} and \traj{} both scale positively from 4B to 8B (+1.27\pp{} and +2.13\pp{} respectively), while \cwm{} remains flat ($-$0.03\pp{}). At 8B, the ranking is \cls{} (89.94) $>$ \traj{} (87.70) $>$ \cwm{} (87.33). The \cls{}--\cwm{} gap widens from 1.32\pp{} at 4B to 2.62\pp{} at 8B (Figure~\ref{fig:scaling_gap}); clustered bootstrap on the 3-seed superset (42, 123, 456 for \cls{}/\cwm{}) yields $p = 0.0066$ (95\% CI $[1.80, 2.71]$), which confirms the widening is not a sampling artifact.
 
