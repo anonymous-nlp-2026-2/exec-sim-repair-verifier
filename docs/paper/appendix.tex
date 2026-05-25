@@ -596,12 +596,6 @@ The same-size 4B comparison uses a single seed; \cls{} 4B seed 123 (val-best ckp
 \paragraph{Domain contrast with generative verification in math reasoning.}
 GenRM~\cite{hosseini2025genrm} demonstrates that generative verifiers outperform discriminative ones for math reasoning. Our results reveal a domain-specific divergence: in code repair verification, the generative formulation (\cwm{}) does not outperform the discriminative one (\cls{}), and degrades sharply at repository level. The key difference is output space structure: math reasoning generates natural-language solution traces with flexible formatting, whereas code execution output requires exact syntactic compliance (specific variable values, error messages, stack traces). This structural constraint makes format collapse, absent in math verification, the dominant failure mode for code \cwm{} at repo level (53--74\% unparseable). The domain contrast suggests that the generative verification advantage is contingent on output space complexity rather than being a universal property of verifier architecture.
 
-\section{Use of AI Assistants}
+\paragraph{Use of AI assistants.}
 \label{app:ai-assistants}
-
-We used Claude (Anthropic) as an AI coding and writing assistant throughout this work. Specifically:
-\begin{itemize}
-    \item \textbf{Code:} drafting experiment scripts, data-processing pipelines, and analysis utilities; debugging and refactoring.
-    \item \textbf{Writing:} drafting and revising paper sections, polishing prose, and reformatting \LaTeX{}.
-    \item \textbf{Literature:} summarizing related papers to inform the related-work section.
-\end{itemize}
+Claude (Anthropic) assisted with code, writing, and literature review.
