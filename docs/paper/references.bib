@@ -69,22 +69,22 @@
 }
 
 @inproceedings{nam2025repoexec,
-  title={{REPOEXEC}: Evaluate Code Generation with a Repository-Level Executable Benchmark},
-  author={Nam, Hai and Dau, Thang and Bui, Nhat and Nguyen, Nghi D. Q.},
-  booktitle={NAACL},
+  title={On the Impacts of Contexts on Repository-Level Code Generation},
+  author={Nam Le Hai and Dung Manh Nguyen and Nghi D. Q. Bui},
+  booktitle={Findings of NAACL},
   year={2025}
 }
 
 @inproceedings{zhao2026genprm,
   title={{GenPRM}: Scaling Test-Time Compute of Process Reward Models via Generative Reasoning},
-  author={Zhao, Mingyang and Liu, Yang and Yang, Lei and Chen, Liang and Li, Zhongyuan},
+  author={Zhao, Jian and Liu, Runze and Zhang, Kaiyan and Zhou, Zhimu and Gao, Junqi and Li, Dong and Lyu, Jiafei and Qian, Zhouyi and Qi, Biqing and Li, Xiu and Zhou, Bowen},
   booktitle={AAAI},
   year={2026}
 }
 
 @inproceedings{hosseini2025genrm,
   title={Generative Verifiers: Reward Modeling as Next-Token Prediction},
-  author={Hosseini, Arian and Yuan, Xingdi and Malkin, Nikolay and Courville, Aaron and Sordoni, Alessandro and Agarwal, Rishabh},
+  author={Zhang, Lunjun and Hosseini, Arian and Bansal, Hritik and Kazemi, Seyed Mehran and Kumar, Aviral and Agarwal, Rishabh},
   booktitle={ICLR},
   year={2025}
 }
@@ -176,7 +176,7 @@
 }
 
 @inproceedings{snell2024scaling,
-  title={Scaling {LLM} Test-Time Compute Optimally can be More Effective than Scaling Model Parameters},
+  title={Scaling {LLM} Test-Time Compute Optimally Can be More Effective than Scaling Parameters for Reasoning},
   author={Snell, Charlie and Lee, Jaehoon and Xu, Kelvin and Kumar, Aviral},
   booktitle={ICLR},
   year={2025},
@@ -267,7 +267,7 @@
 
 @article{guo2024deepseekcoder,
   title={{DeepSeek-Coder}: When the Large Language Model Meets Programming -- The Rise of Code Intelligence},
-  author={Guo, Daya and Zhu, Qihao and Yang, Dejian and Xie, Zhenda and Dong, Kai and Zhang, Wentao and Chen, Guanting and Bi, Xiao and Wu, Y. and Li, Y.K. and Luo, Fuli and Xiong, Yun and Liang, Wenfeng},
+  author={Guo, Daya and Zhu, Qihao and Yang, Dejian and Xie, Zhenda and Dong, Kai and Zhang, Wentao and Chen, Guanting and Bi, Xiao and Wu, Y. and Li, Y.K. and Luo, Fuli and Xiong, Yingfei and Liang, Wenfeng},
   journal={arXiv preprint arXiv:2401.14196},
   year={2024}
 }
@@ -290,11 +290,11 @@
 
 % === Process vs Outcome Supervision ===
 
-@article{lightman2023letsverify,
+@inproceedings{lightman2023letsverify,
   title={Let's Verify Step by Step},
   author={Lightman, Hunter and Kosaraju, Vineet and Burda, Yura and Edwards, Harri and Baker, Bowen and Lee, Teddy and Leike, Jan and Schulman, John and Sutskever, Ilya and Cobbe, Karl},
-  journal={arXiv preprint arXiv:2305.20050},
-  year={2023}
+  booktitle={ICLR},
+  year={2024}
 }
 
 @article{uesato2022solving,
@@ -302,20 +302,6 @@
   author={Uesato, Jonathan and Kushman, Nate and Kumar, Ramana and Song, Francis and Siegel, Noah and Wang, Lisa and Creswell, Antonia and Irving, Geoffrey and Higgins, Irina},
   journal={arXiv preprint arXiv:2211.14275},
   year={2022}
-}
-
-@inproceedings{wang2024mathshepherd,
-  title={Math-Shepherd: Verify and Reinforce {LLMs} Step-by-step without Human Annotations},
-  author={Wang, Peiyi and Li, Lei and Shao, Zhihong and Xu, Runxin and Dai, Damai and Li, Yifei and Chen, Deli and Wu, Yu and Sui, Zhifang},
-  booktitle={Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (ACL)},
-  year={2024}
-}
-
-@article{luo2024omegaprm,
-  title={Improve Mathematical Reasoning in Language Models by Automated Process Supervision},
-  author={Luo, Liangchen and Liu, Yinxiao and Liu, Rosanne and Phatale, Samrat and Lara, Harsh and Li, Yunxuan and Shu, Lei and Zhu, Yun and Meng, Lei and Sun, Jiao and Rastogi, Abhinav},
-  journal={arXiv preprint arXiv:2406.06592},
-  year={2024}
 }
 
 % === Verification-in-the-Loop ===
@@ -351,10 +337,10 @@
   year={2022}
 }
 
-@article{shinn2023reflexion,
+@inproceedings{shinn2023reflexion,
   title={Reflexion: Language Agents with Verbal Reinforcement Learning},
-  author={Shinn, Noah and Cassano, Federico and Gopinath, Ashwin and Narasimhan, Karthik and Yao, Shunyu},
-  journal={NeurIPS},
+  author={Shinn, Noah and Cassano, Federico and Berman, Edward and Gopinath, Ashwin and Narasimhan, Karthik and Yao, Shunyu},
+  booktitle={NeurIPS},
   year={2023}
 }
 
@@ -363,15 +349,16 @@
 @inproceedings{tufano2019predictive,
   title={Learning How to Mutate Source Code from Bug-Fixes},
   author={Tufano, Michele and Watson, Cody and Bavota, Gabriele and Di Penta, Massimiliano and White, Martin and Poshyvanyk, Denys},
-  booktitle={ISSTA},
+  booktitle={ICSME},
   year={2019}
 }
 
 @article{kim2022predictive,
-  title={Predictive Mutation Testing via Natural Language Channel},
-  author={Kim, Jinhan and Ju, Juyoung and Tao, Robert and Hu, Nhat-Tan and Baik, Shin Yoo Juyeon},
-  journal={IEEE TSE},
-  year={2022}
+  title={Predictive Mutation Analysis via the Natural Language Channel in Source Code},
+  author={Kim, Jinhan and Jeon, Juyoung and Hong, Shin and Yoo, Shin},
+  journal={ACM Transactions on Software Engineering and Methodology},
+  year={2022},
+  doi={10.1145/3510417}
 }
 
 % === Task Reformulation NLP ===
@@ -389,10 +376,10 @@
 % === Mutation Testing Validity ===
 
 @inproceedings{andrews2005mutation,
-  title={Is Mutation an Adequate Substitute for Real Faults?},
+  title={Is Mutation an Appropriate Tool for Testing Experiments?},
   author={Andrews, James H and Briand, Lionel C and Labiche, Yvan},
   booktitle={ICSE},
-  pages={313--322},
+  pages={402--411},
   year={2005}
 }
 
@@ -493,9 +480,9 @@
   title={{CodeScore}: Evaluating Code Generation by Learning Code Execution},
   author={Dong, Yihong and Ding, Jiazheng and Jiang, Xue and Li, Ge and Li, Zhuo and Jin, Zhi},
   journal={ACM Transactions on Software Engineering and Methodology},
-  volume={33},
+  volume={34},
   number={8},
-  year={2024}
+  year={2025}
 }
 
 @inproceedings{zhou2023codebertscore,
@@ -516,34 +503,19 @@
 
 @inproceedings{poesia2022synchromesh,
   author    = {Poesia, Gabriel and Polozov, Oleksandr and Le, Vu and Tiwari, Ashish and Soares, Gustavo and Meek, Christopher and Gulwani, Sumit},
-  title     = {Synchromesh: Reliable Code Generation by Retrieving and Transforming},
+  title     = {Synchromesh: Reliable Code Generation from Pre-trained Language Models},
   booktitle = {ICLR},
   year      = {2022}
 }
 
 @inproceedings{dong2024xgrammar,
-  author    = {Dong, Yixin and Huang, Charlie F. and Chen, Tianqi},
+  author    = {Dong, Yixin and Ruan, Charlie F. and Cai, Yaxing and Lai, Ruihang and Xu, Ziyi and Zhao, Yilong and Chen, Tianqi},
   title     = {{XGrammar}: Flexible and Efficient Structured Generation Engine for Large Language Models},
   booktitle = {MLSys},
   year      = {2025}
 }
 
-@inproceedings{ma2025coderm,
-  author    = {Ma, Zeyao and Zhang, Xiaokang and Zhang, Jing and Yu, Jifan and Tang, Jie},
-  title     = {Dynamic Scaling of Unit Tests for Code Reward Modeling},
-  booktitle = {Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (ACL)},
-  pages     = {6917--6935},
-  year      = {2025}
-}
-
 % === Code Reward Models ===
-
-@article{zhu2026codescaler,
-  title={{CodeScaler}: Scaling Code {LLM} Training and Test-Time Inference via Execution-Free Reward Models},
-  author={Zhu, Xiao and Zhou, Xinyu and Zhu, Boyu and Hu, Hanxu and Du, Mingzhe and Zhang, Haotian and Wang, Huiming and Guo, Zhijiang},
-  journal={arXiv preprint arXiv:2602.17684},
-  year={2026}
-}
 
 @inproceedings{li2025codeprm,
   title={{CodePRM}: Execution Feedback-enhanced Process Reward Model for Code Generation},
@@ -574,18 +546,11 @@
   year={2025}
 }
 
-@article{dreamprm2025code,
-  title={{DreamPRM-Code}: Function-as-Step Process Reward Model with Label Correction for {LLM} Coding},
-  author={Zhang, Ruiyi and Qin, Peijia and Cao, Qi and Xie, Pengtao},
-  journal={arXiv preprint arXiv:2512.15000},
-  year={2025}
-}
-
 % === Mutation Testing ===
 
 @inproceedings{jain2023contextual,
   title={Contextual Predictive Mutation Testing},
-  author={Jain, Kush and Barik, Ristimoy and Le Goues, Claire},
+  author={Jain, Kush and Alon, Uri and Groce, Alex and Le Goues, Claire},
   booktitle={ESEC/FSE},
   year={2023}
 }
@@ -608,9 +573,4 @@
 }
 
 
-@article{wei2022emergent,
-  author    = {Jason Wei and Yi Tay and Rishi Bommasani and Colin Raffel and Barret Zoph and Sebastian Borgeaud and Dani Yogatama and Maarten Bosma and Denny Zhou and Donald Metzler and Ed H. Chi and Tatsunori Hashimoto and Oriol Vinyals and Percy Liang and Jeff Dean and William Fedus},
-  title     = {Emergent Abilities of Large Language Models},
-  journal   = {Transactions on Machine Learning Research (TMLR)},
-  year      = {2022}
-}
+

@@ -28,12 +28,7 @@ $\geq 6$ & 5.1 & 30.00 & 40.06 & $\approx$19 \\
 \end{tabular}}
 \end{table}
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=\columnwidth]{figures/paper/fig3_oracle_stratified.pdf}
-\caption{Oracle per-test advantage by F2P test count $T$. Advantage is zero at $T{=}1$ (68.7\%) and concentrates at $T{=}2$ (19.1\%, contributing 55.3\% of total advantage). Note: $y$-axis does not start at zero.}
-\label{fig:oracle_stratified}
-\end{figure}
+Figure~\ref{fig:oracle_stratified} (main text) shows the oracle per-test advantage by F2P test count.
 
 Table~\ref{tab:oracle} and Figure~\ref{fig:oracle_stratified} reveal a sharp concentration: at $T = 1$ (68.7\% of instances), per-test and trajectory-level are informationally equivalent. The advantage materializes at $T = 2$ (19.1\%), where block-correlated advantage reaches 31.69\pp{} (55.3\% of total). The overall block-correlated advantage is 10.93\pp{}, driven by the $T \geq 2$ minority. Block correlation amplifies relative to i.i.d.: at $T = 2$, 31.69\pp{} vs.\ 18.49\pp{} (1.7$\times$). P2P regression is negligible (1.04\% mean, 0\% median); the practical value concentrates in F2P discrimination.
 
@@ -260,6 +255,8 @@ Training samples & 70,748 & 70,748 & 67,343--70,748\textsuperscript{$a$} \\
 
 \paragraph{Mutation operators.} We use five mutation types: (1)~\emph{gold}: unmodified code (all tests pass); (2)~\emph{operator\_swap}: replaces comparison or arithmetic operators (e.g., \texttt{<} $\to$ \texttt{<=}); (3)~\emph{off\_by\_one}: shifts loop bounds or array indices by $\pm$1; (4)~\emph{return\_value}: modifies return statements (e.g., negating a boolean, changing a constant); (5)~\emph{boundary\_removal}: removes conditional guards or boundary checks. Mutation operators were applied using AST-level transformation; variants that did not alter any test outcome were discarded.
 
+\paragraph{Software.} Python 3.10, PyTorch ${\geq}$2.0, HuggingFace Transformers ${\geq}$4.44, PEFT ${\geq}$0.12, bitsandbytes ${\geq}$0.43 (NF4 quantization). Exact version pinning is provided in the code repository.
+
 \paragraph{Compute budget.}
 All experiments were conducted on NVIDIA RTX 5090 GPUs. Training time is approximately 1.5 hours per run for 4B models and 2 hours for 8B models. Total compute budget: ${\sim}$370 GPU-hours across 223 completed runs (135 successful, 88 failed/killed; ${\sim}$46 unique configurations including seeds, formulations, model sizes, and ablations).
 
@@ -424,34 +421,26 @@ Table~\ref{tab:tost_sensitivity} reports the TOST equivalence $p$-value as a fun
 \begin{table}[h]
 \centering
 \small
-\caption{TOST margin sensitivity for \cls{}--\cwm{} variant-level equivalence (5 seeds, 523 variants, 114 clusters). The smallest margin achieving equivalence at $\alpha = 0.05$ is $\pm$1.52\pp{}.}
+\caption{TOST margin sensitivity for \cls{}--\cwm{} equivalence (seed-level paired, 5 seeds, df${=}$4). The smallest margin achieving equivalence at $\alpha = 0.05$ is $\pm$1.63\pp{}.}
 \label{tab:tost_sensitivity}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{ccc}
 \toprule
 \textbf{Margin ($\pm$\pp{})} & \textbf{$p$-value} & \textbf{Equivalent ($\alpha{=}0.05$)?} \\
 \midrule
-1.0 & $\gg$0.05 & No \\
-1.5 & 0.054 & No (borderline) \\
-\textbf{1.52} & ${\sim}$\textbf{0.05} & \textbf{Smallest margin} \\
-1.71 & 0.027 & Yes \\
+1.0 & 0.871 & No \\
+1.5 & 0.113 & No \\
+\textbf{1.63} & ${\sim}$\textbf{0.05} & \textbf{Smallest margin} \\
 2.0 & 0.007 & Yes \\
-3.0 & $4.6{\times}10^{-5}$ & Yes \\
-5.0 & $\ll$0.001 & Yes \\
+3.0 & $3.2{\times}10^{-4}$ & Yes \\
+5.0 & $1.6{\times}10^{-5}$ & Yes \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Figure~\ref{fig:tost_sensitivity} visualises the margin--$p$-value relationship for both comparisons.
+Figure~\ref{fig:tost_sensitivity} (main text) visualises the margin--$p$-value relationship for both comparisons.
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=\columnwidth]{figures/paper/fig_tost_sensitivity.pdf}
-\caption{TOST $p$-value as a function of equivalence margin. \cls{}--\cwm{} (blue) achieves equivalence at $\pm$1.52\pp{}; \cls{}--\traj{} (green) crosses $\alpha{=}0.05$ near $\pm$1.8\pp{} but does not survive Holm correction. Log scale.}
-\label{fig:tost_sensitivity}
-\end{figure}
-
-The minimum equivalence margin is $\pm$1.52\pp{}, 0.48\pp{} below our pre-specified $\pm$2\pp{} threshold. The $\pm$2\pp{} threshold was set based on deployment relevance rather than observed data: at function-level accuracy (85--88\%), a 2\pp{} per-test difference corresponds to ${\sim}$38 additional errors across 1,890 tests (${\sim}$2--3 problems out of 114), comparable in magnitude to between-seed standard deviation (0.37--0.97\pp{}) and checkpoint selection noise ($<$1\pp{}). Differences within this range do not reliably distinguish formulations from training noise in pipeline selection decisions. For \cls{}--\traj{}, the TOST at $\pm$2\pp{} yields $p{=}0.025$, nominally significant but not surviving Holm-Bonferroni correction at $k{=}5$ (adjusted $p{=}0.075$; Table~\ref{tab:holm}). The one-sided decomposition reveals the binding constraint: $p_{\text{upper}}{=}0.005$ ($\Delta < {+}2$\pp{} is well-confirmed) while $p_{\text{lower}}{=}0.025$ ($\Delta > {-}2$\pp{}) limits the overall TOST, consistent with \cls{} having mildly higher accuracy.
+The minimum equivalence margin is $\pm$1.63\pp{}, 0.37\pp{} below our pre-specified $\pm$2\pp{} threshold. The $\pm$2\pp{} threshold was set based on deployment relevance rather than observed data: at function-level accuracy (85--88\%), a 2\pp{} per-test difference corresponds to ${\sim}$38 additional errors across 1,890 tests (${\sim}$2--3 problems out of 114), comparable in magnitude to between-seed standard deviation (0.37--0.97\pp{}) and checkpoint selection noise ($<$1\pp{}). Differences within this range do not reliably distinguish formulations from training noise in pipeline selection decisions. For \cls{}--\traj{}, the TOST at $\pm$2\pp{} yields $p{=}0.025$, nominally significant but not surviving Holm-Bonferroni correction at $k{=}5$ (adjusted $p{=}0.075$; Table~\ref{tab:holm}). The one-sided decomposition reveals the binding constraint: $p_{\text{upper}}{=}0.005$ ($\Delta < {+}2$\pp{} is well-confirmed) while $p_{\text{lower}}{=}0.025$ ($\Delta > {-}2$\pp{}) limits the overall TOST, consistent with \cls{} having mildly higher accuracy.
 
 \paragraph{Robustness: seed-level vs.\ clustered bootstrap TOST.}
 The primary TOST $p$-values use seed-level paired analysis (df${=}$4), treating each training seed as the unit of replication (\S\ref{sec:setup}). Under problem-level clustered bootstrap (resampling 114 problem clusters, 10K iterations), the \cls{}--\traj{} raw TOST $p$ decreases to ${\sim}$0.007 (Holm-adjusted $p{\approx}0.021$), which would confirm equivalence. We report the more conservative seed-level result ($p{=}0.025$, adjusted $p{=}0.075$) as primary, since training seeds are the true unit of replication; problem-level bootstrap pools within-seed observations and may understate between-seed uncertainty. For \cls{}--\cwm{}, both methods confirm equivalence ($p \leq 0.010$), so the choice does not affect conclusions.
@@ -499,27 +488,7 @@ The \cls{}--\traj{} unpaired bootstrap produces wider confidence intervals than 
 \section{Multiple Comparison Correction}
 \label{app:holm}
 
-Table~\ref{tab:holm} applies Holm-Bonferroni correction~\cite{holm1979} to the five primary statistical comparisons across this study ($k{=}5$, family-wise $\alpha{=}0.05$).
-
-\begin{table}[h]
-\centering
-\small
-\caption{Holm-Bonferroni correction for primary comparisons ($k{=}5$). Comparisons ranked by raw $p$-value; each tested against $\alpha / (k - \text{rank} + 1)$.}
-\label{tab:holm}
-\setlength{\tabcolsep}{3pt}
-\resizebox{\columnwidth}{!}{%
-\begin{tabular}{clcccc}
-\toprule
-\textbf{Rank} & \textbf{Comparison} & \textbf{Raw $p$} & \textbf{Factor} & \textbf{Adj $p$} & \textbf{Sig.?} \\
-\midrule
-1 & Repo: \cls{} vs \cwm{} & 0.003 & $\times$5 & 0.015 & \checkmark \\
-2 & Func: \cls{} vs \cwm{} (TOST $\pm$2\pp{}) & 0.007 & $\times$4 & 0.028 & \checkmark \\
-3 & Func: \cls{} vs \traj{} (TOST $\pm$2\pp{}) & 0.025 & $\times$3 & 0.075 & --- \\
-4 & Repo: \cwm{} vs \traj{} & 0.039 & $\times$2 & 0.078 & --- \\
-5 & Repo: \cls{} vs \traj{} & 0.385 & $\times$1 & 0.385 & --- \\
-\bottomrule
-\end{tabular}}
-\end{table}
+Table~\ref{tab:holm} (main text) applies Holm-Bonferroni correction~\cite{holm1979} to the five primary statistical comparisons across this study ($k{=}5$, family-wise $\alpha{=}0.05$).
 
 The two core claims survive correction: the repo-level \cls{}--\cwm{} divergence (adjusted $p{=}0.015$) and function-level \cls{}--\cwm{} equivalence (adjusted $p{=}0.028$). The function-level \cls{}--\traj{} equivalence does not survive correction (adjusted $p{=}0.075$). Under problem-level clustered bootstrap, the raw TOST $p$ decreases to ${\sim}$0.007 (adjusted $p{\approx}0.021$), which would confirm equivalence; we report the more conservative seed-level result ($p{=}0.025$) as primary, since training seeds are the true unit of replication.
 
@@ -532,19 +501,12 @@ We fit mixed-effects linear probability models (LPM) with heteroskedasticity-rob
 
 \paragraph{Repo-level cross-model model.} \texttt{correct $\sim$ formulation $\times$ model + (1|problem\_id)}, both model families, repo level only. \cwm{} deficit: $\hat{\beta}{=}-0.22$ ($-$22\pp{}, $z{=}-64.4$, $p{<}0.001$). Model effect: +1.1\pp{} for Qwen3 ($z{=}3.1$, $p{=}0.002$ in LPM; not significant under GEE, $p{=}0.449$). Formulation$\times$model interaction: +1.6\pp{} less \cwm{} degradation on Qwen3 ($z{=}2.8$, $p{=}0.006$ in LPM; not significant under GEE, $p{=}0.860$). Formulation dominates the predictable variance; model identity is directionally positive but specification-dependent. The 25-cluster random intercept structure limits effective degrees of freedom for the random effects; inferences on fixed effects (formulation, complexity) are robust as they pool across the full observation count.
 
-\paragraph{Logistic regression robustness check.} To verify that LPM conclusions are not artifacts of the linear link function, we fit GEE logistic regression (binomial family, exchangeable working correlation, robust sandwich standard errors) to the same data. For the cross-complexity model, the \cwm{} main effect at function level has OR$=$0.98 (95\% CI [0.86, 1.12], $p{=}0.771$) and the \cwm{}$\times$repo interaction has OR$=$0.31 ([0.15, 0.65], $p{=}0.002$). Average marginal effects are $-$0.2\pp{} (function) and $-$21.6\pp{} (repo), matching LPM coefficients within 0.3\pp{}. For the cross-model model, the \cwm{} deficit has OR$=$0.30 ([0.15, 0.63], $p{=}0.001$, AME$=$\,$-$21.1\pp{}). Direction, magnitude, and significance of all primary effects are concordant between LPM and logistic regression; minor discrepancies in secondary effects (model identity, formulation$\times$model interaction: $p{=}0.449$ and $p{=}0.860$ under GEE vs.\ $p{=}0.002$ and $p{=}0.006$ under LPM) reflect the GEE's more conservative cluster-robust inference with $k{=}25$ clusters. The discrepancy in secondary effects reflects cluster count: the cross-complexity model ($k{=}139$) yields reliable sandwich SEs, while the cross-model model ($k{=}25$) falls below the $k{\geq}40$ threshold recommended for stable cluster-robust inference~\cite{cameron2008bootstrap}.
+\paragraph{Logistic regression robustness check.} To verify that LPM conclusions are not artifacts of the linear link function, we fit GEE logistic regression (binomial family, exchangeable working correlation, robust sandwich standard errors) to the same data. For the cross-complexity model, the \cwm{} main effect at function level has odds ratio (OR)$=$0.98 (95\% CI [0.86, 1.12], $p{=}0.771$) and the \cwm{}$\times$repo interaction has OR$=$0.31 ([0.15, 0.65], $p{=}0.002$). Average marginal effects are $-$0.2\pp{} (function) and $-$21.6\pp{} (repo), matching LPM coefficients within 0.3\pp{}. For the cross-model model, the \cwm{} deficit has OR$=$0.30 ([0.15, 0.63], $p{=}0.001$, AME$=$\,$-$21.1\pp{}). Direction, magnitude, and significance of all primary effects are concordant between LPM and logistic regression; minor discrepancies in secondary effects (model identity, formulation$\times$model interaction: $p{=}0.449$ and $p{=}0.860$ under GEE vs.\ $p{=}0.002$ and $p{=}0.006$ under LPM) reflect the GEE's more conservative cluster-robust inference with $k{=}25$ clusters. The discrepancy in secondary effects reflects cluster count: the cross-complexity model ($k{=}139$) yields reliable sandwich SEs, while the cross-model model ($k{=}25$) falls below the $k{\geq}40$ threshold recommended for stable cluster-robust inference~\cite{cameron2008bootstrap}.
 
 \section{CWM Parseable Bias Analysis}
 \label{app:parseable_bias}
 
-Figure~\ref{fig:cwm_unparseable} summarises the unparseable rate contrast across complexity levels.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=\columnwidth]{figures/paper/fig_cwm_unparseable.pdf}
-\caption{\cwm{} unparseable rate by complexity level. Function-level outputs (${\sim}$5--15 tokens) yield 1.4\% unparseable; repo-level outputs (${\sim}$477 tokens) reach 53.7\% (4B) and 73.8\% (8B). Parseable-only accuracy (inside bars) decreases from 4B to 8B despite rising overall accuracy, confirming default-assignment inflation.}
-\label{fig:cwm_unparseable}
-\end{figure}
+Figure~\ref{fig:cwm_unparseable} (main text) summarises the unparseable rate contrast across complexity levels.
 
 The default-to-pass assignment for unparseable \cwm{} outputs is not random with respect to instance difficulty. Unparseable instances have significantly higher pass rates than parseable ones (74.6\% vs.\ 68.3\%, $\chi^2$ $p = 5.9 \times 10^{-10}$), and \cls{} models achieve higher accuracy on unparseable instances (86.4\% vs.\ 79.1\%, $p = 3.3 \times 10^{-18}$). This indicates that \cwm{}'s parsing failures concentrate on simpler, pass-heavy instances where the majority-class default happens to be correct more often. Cross-model Jaccard overlap of unparseable instance sets is 0.46, confirming this pattern is instance-driven (specific inputs consistently cause parsing failure across models) rather than stochastic. The net effect is that \cwm{}'s reported accuracy is inflated by default-correct assignments on easy instances, while its effective discriminative accuracy on harder instances is substantially lower than the aggregate figure suggests.
 
@@ -596,6 +558,6 @@ The same-size 4B comparison uses a single seed; \cls{} 4B seed 123 (val-best ckp
 \paragraph{Domain contrast with generative verification in math reasoning.}
 GenRM~\cite{hosseini2025genrm} demonstrates that generative verifiers outperform discriminative ones for math reasoning. Our results reveal a domain-specific divergence: in code repair verification, the generative formulation (\cwm{}) does not outperform the discriminative one (\cls{}), and degrades sharply at repository level. The key difference is output space structure: math reasoning generates natural-language solution traces with flexible formatting, whereas code execution output requires exact syntactic compliance (specific variable values, error messages, stack traces). This structural constraint makes format collapse, absent in math verification, the dominant failure mode for code \cwm{} at repo level (53--74\% unparseable). The domain contrast suggests that the generative verification advantage is contingent on output space complexity rather than being a universal property of verifier architecture.
 
-\paragraph{Use of AI assistants.}
+\section{Use of AI Assistance}
 \label{app:ai-assistants}
-Claude (Anthropic) assisted with code, writing, and literature review.
+We used Claude for coding, code drafting, debugging, and language polishing.

@@ -1,6 +1,6 @@
-# Execution-Free Repair Verification: Classification vs. Generation vs. Trajectory
+# A Systematic Comparison of Execution-Free Verification Formulations for Code Repair
 
-Code and data for the paper *"Execution-Free Repair Verification: A Systematic Comparison of Classification, Generation, and Trajectory Formulations"* (EMNLP 2026 submission).
+Code and data for the paper *"A Systematic Comparison of Execution-Free Verification Formulations for Code Repair"* (EMNLP 2026 submission).
 
 ## Setup
 

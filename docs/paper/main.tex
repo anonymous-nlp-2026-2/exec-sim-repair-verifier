@@ -3,8 +3,13 @@
 % ACL style (review mode for anonymous ARR submission)
 \usepackage[review]{acl}
 
-% Fonts — Times Roman (required by ACL/ARR template)
+% Standard packages from official ACL template
 \usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{inconsolata}
 
 % Math
 \usepackage{amsmath}
@@ -15,9 +20,8 @@
 \usepackage{multirow}
 \usepackage{tabularx}
 
-% Graphics
+% Graphics (xcolor loaded by acl.sty)
 \usepackage{graphicx}
-\usepackage{xcolor}
 \graphicspath{{../../artifacts/}}
 
 % Lists
@@ -29,8 +33,6 @@
 \newcommand{\traj}{\textsc{Traj}}
 \newcommand{\fone}{F\textsubscript{1}}
 \newcommand{\pp}{\,\text{pp}}
-\newcommand{\tbd}{\textsc{tbd}}
-\newcommand{\placeholder}[1]{{\color{red}\texttt{[#1]}}}
 
 \title{A Systematic Comparison of Execution-Free Verification Formulations for Code Repair}
 \author{Anonymous}
